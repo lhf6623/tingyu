@@ -1,7 +1,7 @@
 [package]
-name = "music-desktop"
+name = "tingyu"
 version = "0.1.0"
-description = "桌面音乐播放器"
+description = "听屿 · 极简桌面音乐播放器（非官方）"
 edition = "2021"
 rust-version = "1.77"
 

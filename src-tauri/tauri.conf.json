@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "音乐",
+  "productName": "听屿",
   "version": "0.1.0",
   "identifier": "com.hf.music.desktop",
   "build": {
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "音乐",
+        "title": "听屿",
         "width": 1100,
         "height": 720,
         "minWidth": 900,
