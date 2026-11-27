@@ -9,14 +9,11 @@ defineProps<{
   playable?: boolean;
 }>();
 
-const emit = defineEmits<{ back: []; playAll: [] }>();
+const emit = defineEmits<{ playAll: [] }>();
 </script>
 
 <template>
   <header class="detail">
-    <button class="back" title="返回" @click="emit('back')">
-      <Icon name="back" :size="17" />
-    </button>
     <img v-if="coverUrl" class="cover" :src="coverUrl" alt="" />
     <span v-else class="cover" />
     <div class="meta">
@@ -38,22 +35,6 @@ const emit = defineEmits<{ back: []; playAll: [] }>();
   gap: 16px;
   padding: 2px 2px 22px;
   margin-bottom: 12px;
-}
-
-.back {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: var(--r-sm);
-  color: var(--muted);
-  flex: none;
-}
-
-.back:hover {
-  color: var(--text);
-  background: var(--surface);
 }
 
 .cover {

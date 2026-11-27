@@ -197,6 +197,8 @@ function jump(timeMs: number | null) {
   z-index: 50;
   display: flex;
   flex-direction: column;
+  /* fixed 元素不受 #app 的 overflow 裁剪，得自己画圆角，否则四角盖住窗口圆角 */
+  border-radius: var(--win-radius);
   background: var(--bg);
   overflow: hidden;
   animation: overlay-in 0.18s ease;

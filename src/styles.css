@@ -4,7 +4,28 @@
    *   bg      —— 第二层：右侧内容面板，浮起、最靠前
    *   surface —— 第二层内部的小块：hover、卡片、输入框，微微凹陷
    * 分区只靠色差、留白、圆角和阴影，不再画 1px 线条。
-   */
+   *
+   * 这里只放尺寸类结构变量；颜色全部交给下面的主题块。 */
+  --nav-w: 202px;
+  --titlebar-h: 38px;
+  --player-h: 64px;
+  /* 整窗圆角：窗口透明后由网页自己画，四角透出桌面 */
+  --win-radius: 12px;
+  /* 圆角标度：全站统一走这四档，不再各写各的 px */
+  --r-sm: 8px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 18px;
+  --r-pill: 999px;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- 颜色主题 ----
+ * 构建产物 CSS 会先于 JS 就绪，若系统为深色且用户没选过主题，
+ * html:not([data-theme]) 让系统深色提前生效，避免首屏闪白。
+ * 用户显式选过主题后 data-theme 存在，:not 不再匹配，交给下面两条属性规则。 */
+:root {
   --base: #ecebe6;
   --bg: #ffffff;
   --surface: #f5f4f0;
@@ -13,23 +34,97 @@
   --text: #1f1f1d;
   --muted: #6b6961;
   --faint: #b0aea6;
-  --accent: #c8443c;
-  --nav-w: 202px;
-  --titlebar-h: 38px;
-  --player-h: 64px;
-  /* 圆角标度：全站统一走这四档，不再各写各的 px */
-  --r-sm: 8px;
-  --r-md: 10px;
-  --r-lg: 14px;
-  --r-xl: 18px;
-  --r-pill: 999px;
-  /* 第二层面板 / 弹出层的投影，是「视觉差」的主要来源 */
-  --stage-shadow: 0 12px 32px rgba(38, 34, 26, 0.1), 0 2px 8px rgba(38, 34, 26, 0.06);
-  --pop-shadow: 0 12px 34px rgba(38, 34, 26, 0.16), 0 2px 8px rgba(38, 34, 26, 0.08);
   --scroll-thumb: rgba(0, 0, 0, 0.16);
   --scroll-thumb-hover: rgba(0, 0, 0, 0.3);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  --stage-shadow: 0 12px 32px rgba(38, 34, 26, 0.1), 0 2px 8px rgba(38, 34, 26, 0.06);
+  --pop-shadow: 0 12px 34px rgba(38, 34, 26, 0.16), 0 2px 8px rgba(38, 34, 26, 0.08);
+  /* 默认强调色；危险色是语义色，不跟强调色走 */
+  --accent: #c8443c;
+  --danger: #c8443c;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) {
+    --base: #101013;
+    --bg: #1c1c21;
+    --surface: #26262c;
+    --line-strong: rgba(255, 255, 255, 0.18);
+    --text: #ededeb;
+    --muted: #9a988f;
+    --faint: #6e6c65;
+    --scroll-thumb: rgba(255, 255, 255, 0.15);
+    --scroll-thumb-hover: rgba(255, 255, 255, 0.28);
+    --stage-shadow: 0 14px 38px rgba(0, 0, 0, 0.45), 0 2px 10px rgba(0, 0, 0, 0.3);
+    --pop-shadow: 0 14px 38px rgba(0, 0, 0, 0.55), 0 2px 10px rgba(0, 0, 0, 0.35);
+    --accent: #e86a61;
+    --danger: #e86a61;
+  }
+}
+
+html[data-theme="light"] {
+  --base: #ecebe6;
+  --bg: #ffffff;
+  --surface: #f5f4f0;
+  --line-strong: rgba(0, 0, 0, 0.14);
+  --text: #1f1f1d;
+  --muted: #6b6961;
+  --faint: #b0aea6;
+  --scroll-thumb: rgba(0, 0, 0, 0.16);
+  --scroll-thumb-hover: rgba(0, 0, 0, 0.3);
+  --stage-shadow: 0 12px 32px rgba(38, 34, 26, 0.1), 0 2px 8px rgba(38, 34, 26, 0.06);
+  --pop-shadow: 0 12px 34px rgba(38, 34, 26, 0.16), 0 2px 8px rgba(38, 34, 26, 0.08);
+  --danger: #c8443c;
+}
+
+html[data-theme="dark"] {
+  --base: #101013;
+  --bg: #1c1c21;
+  --surface: #26262c;
+  --line-strong: rgba(255, 255, 255, 0.18);
+  --text: #ededeb;
+  --muted: #9a988f;
+  --faint: #6e6c65;
+  --scroll-thumb: rgba(255, 255, 255, 0.15);
+  --scroll-thumb-hover: rgba(255, 255, 255, 0.28);
+  --stage-shadow: 0 14px 38px rgba(0, 0, 0, 0.45), 0 2px 10px rgba(0, 0, 0, 0.3);
+  --pop-shadow: 0 14px 38px rgba(0, 0, 0, 0.55), 0 2px 10px rgba(0, 0, 0, 0.35);
+  --danger: #e86a61;
+}
+
+/* ---- 强调色 ----
+ * --accent 只管品牌装饰与选中态（当前曲目、已收藏、登录页标记）。
+ * 删除 / 清空 / 错误提示走 --danger，换主题色不会把危险操作染成别的颜色。 */
+html[data-accent="red"] {
+  --accent: #c8443c;
+}
+html[data-accent="blue"] {
+  --accent: #3c6ea5;
+}
+html[data-accent="green"] {
+  --accent: #3f7d5a;
+}
+html[data-accent="purple"] {
+  --accent: #7355a8;
+}
+html[data-accent="amber"] {
+  --accent: #a8732e;
+}
+
+/* 深色底上同色会发闷，强调色统一提亮一档 */
+html[data-theme="dark"][data-accent="red"] {
+  --accent: #e86a61;
+}
+html[data-theme="dark"][data-accent="blue"] {
+  --accent: #7fa9dd;
+}
+html[data-theme="dark"][data-accent="green"] {
+  --accent: #6cbb8e;
+}
+html[data-theme="dark"][data-accent="purple"] {
+  --accent: #a98adf;
+}
+html[data-theme="dark"][data-accent="amber"] {
+  --accent: #d1a054;
 }
 
 * {
@@ -39,9 +134,19 @@
 }
 
 html,
-body,
+body {
+  height: 100%;
+  /* 窗口透明，html/body 不画背景，圆角四角才能透出桌面 */
+  background: transparent;
+}
+
 #app {
   height: 100%;
+  /* 全窗唯一的圆角容器：登录页、主界面、歌词层都在这层里被裁出圆角 */
+  border-radius: var(--win-radius);
+  overflow: hidden;
+  background: var(--base);
+  transition: background-color 0.18s ease;
 }
 
 body {
@@ -51,7 +156,6 @@ body {
   font-weight: 400;
   line-height: 1.5;
   color: var(--text);
-  background: var(--base);
   -webkit-font-smoothing: antialiased;
   user-select: none;
   overflow: hidden;
@@ -110,20 +214,4 @@ input {
 
 ::-webkit-scrollbar-button {
   display: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --base: #101013;
-    --bg: #1c1c21;
-    --surface: #26262c;
-    --line-strong: rgba(255, 255, 255, 0.18);
-    --text: #ededeb;
-    --muted: #9a988f;
-    --faint: #6e6c65;
-    --stage-shadow: 0 14px 38px rgba(0, 0, 0, 0.45), 0 2px 10px rgba(0, 0, 0, 0.3);
-    --pop-shadow: 0 14px 38px rgba(0, 0, 0, 0.55), 0 2px 10px rgba(0, 0, 0, 0.35);
-    --scroll-thumb: rgba(255, 255, 255, 0.15);
-    --scroll-thumb-hover: rgba(255, 255, 255, 0.28);
-  }
 }

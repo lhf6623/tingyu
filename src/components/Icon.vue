@@ -34,6 +34,7 @@ const PATHS: Record<string, string> = {
     '<path d="M4.2 7h13M4.2 12h13M4.2 17h8"/><path d="M18.6 12.6v6M15.6 15.6h6"/>',
   note: '<circle cx="7.2" cy="17.6" r="2.7"/><path d="M9.9 17.6V6.8L18.8 5v10"/><circle cx="16.1" cy="15" r="2.7"/>',
   back: '<path d="M14.4 5.8L8.2 12l6.2 6.2"/>',
+  forward: '<path d="M9.6 5.8L15.8 12l-6.2 6.2"/>',
   /* 循环改成单环缺口 + 一个箭头：原来的双环双箭头在 16px 下会糊成一团。 */
   repeat: '<path d="M19.8 12a7.8 7.8 0 1 1-2.4-5.6"/><path d="M19.9 4.4v4.3h-4.3"/>',
   "repeat-one":

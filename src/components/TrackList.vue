@@ -13,11 +13,19 @@ withDefaults(
     currentId?: string;
     showIndex?: boolean;
     showAlbum?: boolean;
+    showDuration?: boolean;
     dense?: boolean;
     emptyText?: string;
     loading?: boolean;
   }>(),
-  { showIndex: true, showAlbum: true, dense: false, emptyText: "这里还没有歌曲", loading: false },
+  {
+    showIndex: true,
+    showAlbum: true,
+    showDuration: true,
+    dense: false,
+    emptyText: "这里还没有歌曲",
+    loading: false,
+  },
 );
 
 const emit = defineEmits<{ play: [track: Track, index: number] }>();
@@ -132,7 +140,7 @@ onBeforeUnmount(() => {
         </span>
       </span>
       <span v-if="showAlbum" class="album ellipsis">{{ track.album?.title ?? "" }}</span>
-      <span class="dur">{{ formatDuration(track.durationSeconds) }}</span>
+      <span v-if="showDuration" class="dur">{{ formatDuration(track.durationSeconds) }}</span>
       <button
         class="fav"
         :class="{ on: library.isFavorite(track), busy: pending.has(track.id) }"

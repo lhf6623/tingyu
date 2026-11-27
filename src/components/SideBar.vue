@@ -217,6 +217,11 @@ onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));
   background: var(--bg);
 }
 
+/* 激活项图标染强调色：面积小但常驻可见，换主题色时有明确反馈 */
+.item.active :deep(svg) {
+  color: var(--accent);
+}
+
 .section {
   padding: 18px 18px 8px;
   font-size: 11px;
@@ -376,6 +381,6 @@ onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));
 }
 
 .account-action.danger {
-  color: var(--accent);
+  color: var(--danger);
 }
 </style>

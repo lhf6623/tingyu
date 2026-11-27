@@ -3,13 +3,11 @@ import { onMounted, ref } from "vue";
 import DetailHeader from "../components/DetailHeader.vue";
 import TrackList from "../components/TrackList.vue";
 import { api, artistText, errorText, type AlbumMeta, type Track } from "../api";
-import { useNav } from "../composables/useNav";
 import { usePlayer } from "../composables/usePlayer";
 import { useToast } from "../composables/useToast";
 
 const props = defineProps<{ id: string; title: string; coverUrl?: string }>();
 
-const nav = useNav();
 const player = usePlayer();
 const { current } = player;
 const toast = useToast();
@@ -51,7 +49,6 @@ function artistLine(meta: AlbumMeta | null): string {
       :subtitle="artistLine(album)"
       :meta="album?.count ? `${album.count} 首` : tracks.length ? `${tracks.length} 首` : ''"
       :playable="tracks.length > 0"
-      @back="nav.back()"
       @play-all="playAll"
     />
 

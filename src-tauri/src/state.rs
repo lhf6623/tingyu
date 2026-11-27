@@ -181,6 +181,7 @@ mod tests {
             cover_url: None,
             duration_seconds: Some(200.0),
             available: true,
+            favorite: false,
         }
     }
 

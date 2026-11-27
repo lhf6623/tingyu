@@ -52,7 +52,6 @@ function openAlbum(album: AlbumCard) {
       :title="artist?.name ?? title"
       :meta="tracks.length ? `热门 ${tracks.length} 首` : ''"
       :playable="tracks.length > 0"
-      @back="nav.back()"
       @play-all="playAll"
     />
 

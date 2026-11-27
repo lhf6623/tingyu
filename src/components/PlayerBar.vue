@@ -255,7 +255,7 @@ function onVolume(event: Event) {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--text);
+  background: var(--accent);
   color: var(--bg);
   flex: none;
 }
@@ -305,7 +305,7 @@ function onVolume(event: Event) {
   left: 0;
   height: 3px;
   border-radius: var(--r-pill);
-  background: var(--text);
+  background: var(--accent);
 }
 
 .knob {
@@ -314,7 +314,7 @@ function onVolume(event: Event) {
   height: 8px;
   margin-left: -4px;
   border-radius: 50%;
-  background: var(--text);
+  background: var(--accent);
   opacity: 0;
 }
 

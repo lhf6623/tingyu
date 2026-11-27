@@ -124,8 +124,10 @@ fn cover_from(value: &Value) -> Option<String> {
         .find(|url| is_safe_resource_url(url))
 }
 
-const DURATION_KEYS: [&str; 6] = [
+const DURATION_KEYS: [&str; 12] = [
     "duration", "songDuration", "contentTime", "timeLength", "totalTime", "playTime",
+    // 歌单 / 专辑详情里常见的时长字段名，收藏接口用的是前面几个
+    "durationMs", "songDurationMs", "timing", "length", "songLength", "musicDuration",
 ];
 
 /// 10 小时以上的数值按毫秒处理——单曲不可能这么长，但毫秒值几乎必然超过这个门槛。
@@ -170,7 +172,12 @@ fn duration_seconds(value: &Value) -> Option<f64> {
             return Some(seconds);
         }
     }
-    content_extra(value).and_then(|extra| deep_duration(&extra, 0))
+    // 先搜 contentExInfo（收藏列表埋这里），再对整个曲目对象深搜兜底。
+    // 歌单详情的时长可能在别的嵌套层，只搜 contentExInfo 会漏。
+    if let Some(seconds) = content_extra(value).and_then(|extra| deep_duration(&extra, 0)) {
+        return Some(seconds);
+    }
+    deep_duration(value, 0)
 }
 
 fn favorite_flag(value: &Value) -> bool {
@@ -404,4 +411,46 @@ pub fn artist_from(body: &Value) -> (ArtistMeta, Vec<Track>, Vec<AlbumCard>) {
         .map(|d| tracks_from(array_at(d, "songSimpleInfos")))
         .unwrap_or_default();
     (artist, tracks, albums)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn duration_from_flat_field() {
+        let v = json!({ "contentID": "x", "contentName": "t", "duration": 200 });
+        assert_eq!(duration_seconds(&v), Some(200.0));
+    }
+
+    #[test]
+    fn duration_from_nested_field() {
+        // 歌单详情可能把时长埋在嵌套层，深搜要能兜住
+        let v = json!({
+            "contentID": "x", "contentName": "t",
+            "songInfo": { "durationMs": 205000 },
+            "albumInfo": { "songCount": 12 }
+        });
+        assert_eq!(duration_seconds(&v), Some(205.0));
+    }
+
+    #[test]
+    fn duration_from_content_ex_info() {
+        let v = json!({
+            "contentID": "x", "contentName": "t",
+            "contentExInfo": "{\"duration\":198}"
+        });
+        assert_eq!(duration_seconds(&v), Some(198.0));
+    }
+
+    #[test]
+    fn duration_ignores_non_duration_numbers() {
+        // albumInfo.songCount 这类字段不能被误判成时长
+        let v = json!({
+            "contentID": "x", "contentName": "t",
+            "albumInfo": { "songCount": 12, "contentID": "999" }
+        });
+        assert_eq!(duration_seconds(&v), None);
+    }
 }

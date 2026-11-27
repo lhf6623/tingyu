@@ -7,6 +7,7 @@ import { useSearch } from "../composables/useSearch";
 import { useWindowControls } from "../composables/useWindowControls";
 
 const nav = useNav();
+const { canBack, back: goBack, canForward, forward: goForward } = nav;
 const search = useSearch();
 const { keyword, suggestions, suggesting, history } = search;
 
@@ -124,6 +125,15 @@ onBeforeUnmount(() => {
 
 <template>
   <header class="titlebar" data-tauri-drag-region>
+    <div class="history">
+      <button class="nav-btn" :disabled="!canBack" title="返回" @click="goBack()">
+        <Icon name="back" :size="17" />
+      </button>
+      <button class="nav-btn" :disabled="!canForward" title="前进" @click="goForward()">
+        <Icon name="forward" :size="17" />
+      </button>
+    </div>
+
     <div class="drag" data-tauri-drag-region />
 
     <div ref="searchBox" class="search">
@@ -216,6 +226,33 @@ onBeforeUnmount(() => {
   z-index: 40;
 }
 
+.history {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-sm);
+  color: var(--muted);
+}
+
+.nav-btn:hover:not(:disabled) {
+  color: var(--text);
+  background: var(--surface);
+}
+
+.nav-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
 .drag {
   flex: 1;
   height: 100%;
@@ -280,7 +317,7 @@ onBeforeUnmount(() => {
 }
 
 .dd-clear:hover {
-  color: var(--accent);
+  color: var(--danger);
 }
 
 .dd-row {

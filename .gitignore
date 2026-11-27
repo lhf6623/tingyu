@@ -5,3 +5,4 @@ src-tauri/gen/schemas/
 app-icon.png
 .DS_Store
 *.log
+.workbuddy/

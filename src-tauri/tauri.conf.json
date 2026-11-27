@@ -19,7 +19,11 @@
         "minWidth": 900,
         "minHeight": 560,
         "center": true,
-        "decorations": false
+        "decorations": false,
+        "acceptFirstMouse": true,
+        "transparent": true,
+        "noRedirectionBitmap": true,
+        "shadow": false
       }
     ],
     "security": {

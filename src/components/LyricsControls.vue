@@ -146,7 +146,7 @@ function onVolume(event: Event) {
 }
 
 .fill {
-  background: var(--text);
+  background: var(--accent);
 }
 
 .knob {
@@ -155,7 +155,7 @@ function onVolume(event: Event) {
   height: 9px;
   margin-left: -4.5px;
   border-radius: 50%;
-  background: var(--text);
+  background: var(--accent);
   opacity: 0;
   transition: opacity 0.12s ease;
 }
@@ -197,7 +197,7 @@ function onVolume(event: Event) {
   height: 46px;
   border-radius: 50%;
   color: var(--bg);
-  background: var(--text);
+  background: var(--accent);
   padding-left: 2px;
 }
 
@@ -227,10 +227,22 @@ function onVolume(event: Event) {
   color: var(--muted);
 }
 
+/* 和播放栏同一套自定义滑块：Mac 的 WKWebView 会按系统原生样式渲染 range
+ * （accent-color 管不到轨道），只有 appearance:none + 自定义 thumb 才跨端一致。 */
 .volume {
   width: 76px;
-  height: 16px;
-  accent-color: var(--text);
+  height: 3px;
+  appearance: none;
+  background: var(--line-strong);
+  border-radius: var(--r-pill);
   cursor: pointer;
+}
+
+.volume::-webkit-slider-thumb {
+  appearance: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--text);
 }
 </style>

@@ -6,6 +6,7 @@ import SideBar from "./components/SideBar.vue";
 import PlayerBar from "./components/PlayerBar.vue";
 import QueuePane from "./components/QueuePane.vue";
 import LyricsOverlay from "./components/LyricsOverlay.vue";
+import LoginView from "./components/LoginView.vue";
 import DiscoverView from "./views/DiscoverView.vue";
 import FavoritesView from "./views/FavoritesView.vue";
 import SearchView from "./views/SearchView.vue";
@@ -29,6 +30,7 @@ const auth = ref<AuthStatus | null>(null);
 const cache = useCache();
 const booting = ref(true);
 const loggingIn = ref(false);
+const loginError = ref("");
 let unlistenTray: (() => void) | undefined;
 
 const VIEWS = {
@@ -83,12 +85,13 @@ async function refreshAuth() {
 async function doLogin() {
   if (loggingIn.value) return;
   loggingIn.value = true;
+  loginError.value = "";
   try {
     auth.value = await api.login();
     cache.invalidate();
-    nav.goRoot({ name: "discover" });
+    nav.reset({ name: "discover" });
   } catch (error) {
-    toastError(errorText(error));
+    loginError.value = errorText(error);
   } finally {
     loggingIn.value = false;
   }
@@ -104,7 +107,7 @@ async function doLogout() {
   // 退出后覆盖层不能继续挂在登录门上面。
   player.closeLyrics();
   cache.invalidate();
-  nav.goRoot({ name: "discover" });
+  nav.reset({ name: "discover" });
 }
 
 /** 重新登录：先清掉旧会话再走一遍扫码，避免残留的音乐 Token 继续被使用。 */
@@ -121,6 +124,8 @@ async function doRelogin() {
 }
 
 function onKeydown(event: KeyboardEvent) {
+  // 未登录时主界面没有挂载，快捷键不应驱动一个看不见的播放器。
+  if (!auth.value?.authenticated) return;
   const target = event.target as HTMLElement | null;
   if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
   if (event.metaKey || event.ctrlKey || event.altKey) return;
@@ -163,6 +168,7 @@ onMounted(async () => {
   window.addEventListener("keydown", onKeydown);
   // 托盘菜单的播放控制由 Rust 侧发事件过来，音频元素只在前端。
   unlistenTray = await listen<string>("tray-player", (event) => {
+    if (!auth.value?.authenticated) return;
     if (event.payload === "toggle") player.toggle();
     else if (event.payload === "next") player.next();
     else if (event.payload === "previous") player.previous();
@@ -176,7 +182,15 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="app">
+  <LoginView
+    v-if="!auth?.authenticated"
+    :booting="booting"
+    :logging-in="loggingIn"
+    :error="loginError"
+    @login="doLogin"
+  />
+
+  <div v-else class="app">
     <SideBar
       :authenticated="!!auth?.authenticated"
       :account-label="auth?.accountLabel"
@@ -191,17 +205,7 @@ onBeforeUnmount(() => {
 
       <div class="stage-body">
         <main class="main">
-          <div v-if="booting" class="center">正在检查登录状态…</div>
-
-          <div v-else-if="!auth?.authenticated" class="gate">
-            <h1>登录你的音乐账号</h1>
-            <p>在官方扫码页完成授权。本机只保存音乐会话，播放地址不落盘。</p>
-            <button class="primary" :disabled="loggingIn" @click="doLogin">
-              {{ loggingIn ? "等待授权…" : "扫码登录" }}
-            </button>
-          </div>
-
-          <KeepAlive v-else :max="10">
+          <KeepAlive :max="10">
             <component :is="view" :key="keepKey" v-bind="viewProps" />
           </KeepAlive>
         </main>
@@ -213,11 +217,11 @@ onBeforeUnmount(() => {
     </div>
 
     <LyricsOverlay />
+  </div>
 
-    <div class="toasts">
-      <div v-for="item in toasts" :key="item.id" class="toast" :class="{ bad: item.bad }">
-        {{ item.text }}
-      </div>
+  <div class="toasts">
+    <div v-for="item in toasts" :key="item.id" class="toast" :class="{ bad: item.bad }">
+      {{ item.text }}
     </div>
   </div>
 </template>
@@ -264,45 +268,6 @@ onBeforeUnmount(() => {
   padding: 20px 24px 0;
 }
 
-.center {
-  padding: 60px 0;
-  text-align: center;
-  font-size: 12px;
-  color: var(--faint);
-}
-
-.gate {
-  max-width: 340px;
-  margin: 16vh auto 0;
-  text-align: center;
-}
-
-.gate h1 {
-  font-size: 18px;
-  font-weight: 500;
-  margin-bottom: 10px;
-}
-
-.gate p {
-  font-size: 12px;
-  line-height: 1.7;
-  color: var(--faint);
-  margin-bottom: 22px;
-}
-
-.primary {
-  background: var(--text);
-  color: var(--bg);
-  font-size: 13px;
-  border-radius: var(--r-md);
-  padding: 9px 22px;
-}
-
-.primary:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-
 .toasts {
   position: fixed;
   left: 50%;
@@ -327,6 +292,6 @@ onBeforeUnmount(() => {
 }
 
 .toast.bad {
-  color: var(--accent);
+  color: var(--danger);
 }
 </style>

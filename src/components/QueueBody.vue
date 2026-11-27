@@ -56,7 +56,7 @@ const { state } = player;
 }
 
 .clear:hover {
-  color: var(--accent);
+  color: var(--danger);
 }
 
 .rows {
@@ -133,7 +133,7 @@ const { state } = player;
 }
 
 .del:hover {
-  color: var(--accent);
+  color: var(--danger);
   background: var(--bg);
 }
 
