@@ -7,8 +7,7 @@ export type Route =
   | { name: "settings" }
   | { name: "playlist"; id: string; kind: string; title: string; coverUrl?: string }
   | { name: "album"; id: string; title: string; coverUrl?: string }
-  | { name: "artist"; id: string; title: string }
-  | { name: "lyrics" };
+  | { name: "artist"; id: string; title: string };
 
 const route = ref<Route>({ name: "discover" });
 const stack = ref<Route[]>([]);

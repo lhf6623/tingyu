@@ -25,6 +25,8 @@ const state = reactive({
   lyrics: null as LyricsDoc | null,
   lyricsLoading: false,
   queueOpen: false,
+  /** 歌词覆盖层是否展开。不持久化——每次启动都是收起的。 */
+  lyricsOpen: false,
   closeToTray: true,
 });
 
@@ -324,6 +326,19 @@ function toggleQueue() {
   scheduleSave();
 }
 
+function toggleLyrics() {
+  state.lyricsOpen = !state.lyricsOpen;
+  // 歌词铺满内容区时，队列面板没有立足之地，直接收起。
+  if (state.lyricsOpen && state.queueOpen) {
+    state.queueOpen = false;
+    scheduleSave();
+  }
+}
+
+function closeLyrics() {
+  state.lyricsOpen = false;
+}
+
 audio.addEventListener("timeupdate", () => {
   state.position = audio.currentTime;
 });
@@ -383,6 +398,8 @@ export function usePlayer() {
     setQuality,
     cycleMode,
     toggleQueue,
+    toggleLyrics,
+    closeLyrics,
     setCloseToTray,
   };
 }

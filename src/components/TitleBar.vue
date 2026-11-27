@@ -233,7 +233,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 38px;
+  height: var(--titlebar-h);
   flex: none;
   padding-left: 16px;
   background: var(--surface);

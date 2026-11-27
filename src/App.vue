@@ -5,7 +5,7 @@ import TitleBar from "./components/TitleBar.vue";
 import SideBar from "./components/SideBar.vue";
 import PlayerBar from "./components/PlayerBar.vue";
 import QueuePane from "./components/QueuePane.vue";
-import LyricsView from "./views/LyricsView.vue";
+import LyricsOverlay from "./components/LyricsOverlay.vue";
 import DiscoverView from "./views/DiscoverView.vue";
 import FavoritesView from "./views/FavoritesView.vue";
 import SearchView from "./views/SearchView.vue";
@@ -39,13 +39,11 @@ const VIEWS = {
   playlist: PlaylistView,
   album: AlbumView,
   artist: ArtistView,
-  lyrics: LyricsView,
 };
 
 const view = computed(() => VIEWS[route.value.name]);
-const immersive = computed(() => route.value.name === "lyrics");
 const queueVisible = computed(
-  () => state.queueOpen && !!auth.value?.authenticated && !immersive.value,
+  () => state.queueOpen && !!auth.value?.authenticated && !state.lyricsOpen,
 );
 const viewKey = computed(() => {
   const current = route.value;
@@ -103,6 +101,8 @@ async function doLogout() {
     toastError(errorText(error));
   }
   auth.value = { authenticated: false };
+  // 退出后覆盖层不能继续挂在登录门上面。
+  player.closeLyrics();
   cache.invalidate();
   nav.goRoot({ name: "discover" });
 }
@@ -115,6 +115,7 @@ async function doRelogin() {
     // 清不掉也要继续，否则用户会被卡在旧的失效会话里。
   }
   auth.value = { authenticated: false };
+  player.closeLyrics();
   cache.invalidate();
   await doLogin();
 }
@@ -125,6 +126,12 @@ function onKeydown(event: KeyboardEvent) {
   if (event.metaKey || event.ctrlKey || event.altKey) return;
 
   switch (event.key) {
+    case "Escape":
+      // 歌词覆盖层吃掉 Esc，避免顺带触发其他关闭行为。
+      if (!state.lyricsOpen) return;
+      event.preventDefault();
+      player.closeLyrics();
+      break;
     case " ":
       event.preventDefault();
       player.toggle();
@@ -169,11 +176,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="app" :class="{ 'with-queue': queueVisible, immersive }">
+  <div class="app" :class="{ 'with-queue': queueVisible }">
     <TitleBar />
 
     <SideBar
-      v-if="!immersive"
       :authenticated="!!auth?.authenticated"
       :account-label="auth?.accountLabel"
       :expire-time="auth?.musicExpireTime"
@@ -201,6 +207,8 @@ onBeforeUnmount(() => {
 
     <PlayerBar />
 
+    <LyricsOverlay />
+
     <div class="toasts">
       <div v-for="item in toasts" :key="item.id" class="toast" :class="{ bad: item.bad }">
         {{ item.text }}
@@ -214,21 +222,11 @@ onBeforeUnmount(() => {
   height: 100%;
   display: grid;
   grid-template-columns: var(--nav-w) minmax(0, 1fr);
-  grid-template-rows: 38px minmax(0, 1fr) var(--player-h);
+  grid-template-rows: var(--titlebar-h) minmax(0, 1fr) var(--player-h);
 }
 
 .app.with-queue {
   grid-template-columns: var(--nav-w) minmax(0, 1fr) 320px;
-}
-
-/* 沉浸歌词页收起侧栏：列宽压成 0，标题栏仍在第二列铺满。 */
-.app.immersive {
-  grid-template-columns: 0 minmax(0, 1fr);
-}
-
-.app.immersive .main {
-  padding: 0;
-  overflow: hidden;
 }
 
 .main {

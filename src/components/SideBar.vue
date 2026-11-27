@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import Icon from "./Icon.vue";
-import { api, errorText, type Playlist } from "../api";
+import type { Playlist } from "../api";
 import { useCache } from "../composables/useCache";
 import { useNav, type Route } from "../composables/useNav";
-import { useToast } from "../composables/useToast";
+import { usePlaylists } from "../composables/usePlaylists";
 
 const props = defineProps<{
   authenticated: boolean;
@@ -16,12 +16,17 @@ const emit = defineEmits<{ logout: []; relogin: [] }>();
 
 const nav = useNav();
 const route = nav.route;
-const toast = useToast();
 const cache = useCache();
+// 歌单数据在模块级 store 里，侧栏卸载重建（进/出歌词页）不会重新请求。
+const {
+  items: playlists,
+  loading: playlistsLoading,
+  load: loadPlaylists,
+  ensure: ensurePlaylists,
+  reset: resetPlaylists,
+} = usePlaylists();
 const menuOpen = ref(false);
 const rootRef = ref<HTMLElement | null>(null);
-const playlists = ref<Playlist[]>([]);
-const playlistsLoading = ref(false);
 
 const items: { name: Route["name"]; label: string; icon: string }[] = [
   { name: "discover", label: "发现", icon: "spark" },
@@ -50,18 +55,6 @@ const expireText = computed(() => {
   return `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}`;
 });
 
-async function loadPlaylists() {
-  if (!props.authenticated || playlistsLoading.value) return;
-  playlistsLoading.value = true;
-  try {
-    playlists.value = await api.playlists();
-  } catch (error) {
-    toast.error(`加载歌单失败：${errorText(error)}`);
-  } finally {
-    playlistsLoading.value = false;
-  }
-}
-
 function select(name: Route["name"]) {
   nav.goRoot({ name } as Route);
 }
@@ -89,20 +82,20 @@ function onDocumentClick(event: MouseEvent) {
 // 设置页手动刷新时，侧栏的歌单列表也要跟着重拉。
 watch(
   () => cache.version.value,
-  () => void loadPlaylists(),
+  () => void loadPlaylists(true),
 );
 
 watch(
   () => props.authenticated,
   (authenticated) => {
-    if (authenticated) void loadPlaylists();
-    else playlists.value = [];
+    if (authenticated) void ensurePlaylists();
+    else resetPlaylists();
   },
 );
 
 onMounted(() => {
   window.addEventListener("click", onDocumentClick);
-  void loadPlaylists();
+  void ensurePlaylists();
 });
 
 onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));

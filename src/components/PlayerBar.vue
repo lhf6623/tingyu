@@ -2,18 +2,14 @@
 import { computed, ref } from "vue";
 import Icon from "./Icon.vue";
 import { artistText, maskDuration } from "../api";
-import { useNav } from "../composables/useNav";
 import { usePlayer, type PlayMode } from "../composables/usePlayer";
 
 const player = usePlayer();
 const { state, current, progress } = player;
-const nav = useNav();
 
-const onLyricsPage = computed(() => nav.route.value.name === "lyrics");
-
-function openLyrics() {
-  if (!current.value || onLyricsPage.value) return;
-  nav.go({ name: "lyrics" });
+function toggleLyrics() {
+  if (!current.value) return;
+  player.toggleLyrics();
 }
 
 const bar = ref<HTMLDivElement | null>(null);
@@ -70,7 +66,12 @@ function onVolume(event: Event) {
 
 <template>
   <footer class="bar">
-    <button class="now" :disabled="!current" title="打开歌词页" @click="openLyrics">
+    <button
+      class="now"
+      :disabled="!current"
+      :title="state.lyricsOpen ? '收起歌词' : '展开歌词'"
+      @click="toggleLyrics"
+    >
       <img v-if="current?.coverUrl" class="cover" :src="current.coverUrl" alt="" />
       <span v-else class="cover" />
       <span class="meta">
@@ -120,9 +121,9 @@ function onVolume(event: Event) {
       </button>
       <button
         class="icon-btn"
-        :class="{ on: onLyricsPage }"
+        :class="{ on: state.lyricsOpen }"
         title="歌词"
-        @click="openLyrics"
+        @click="toggleLyrics"
       >
         <Icon name="lyrics" :size="15" />
       </button>
