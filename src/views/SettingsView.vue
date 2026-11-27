@@ -151,7 +151,7 @@ onMounted(() => void refreshCache());
         <span class="value static">0.1.0</span>
       </div>
       <p class="note">
-        Tauri v2 + Vue 3 重写的华为音乐客户端，非官方，仅供个人学习使用。播放地址不落盘、不写日志。
+        Tauri v2 + Vue 3 实现的第三方桌面客户端。非官方项目，与任何音乐服务提供方无隶属或合作关系，仅供个人学习自用。播放地址不落盘、不写日志、无遥测。
       </p>
     </div>
   </section>

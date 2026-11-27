@@ -185,8 +185,8 @@ onBeforeUnmount(() => {
       <div v-if="booting" class="center">正在检查登录状态…</div>
 
       <div v-else-if="!auth?.authenticated" class="gate">
-        <h1>登录华为音乐账号</h1>
-        <p>在官方的扫码页完成授权。本机只保存音乐会话，播放地址不落盘。</p>
+        <h1>登录你的音乐账号</h1>
+        <p>在官方扫码页完成授权。本机只保存音乐会话，播放地址不落盘。</p>
         <button class="primary" :disabled="loggingIn" @click="doLogin">
           {{ loggingIn ? "等待授权…" : "扫码登录" }}
         </button>

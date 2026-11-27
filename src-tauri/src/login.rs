@@ -26,7 +26,7 @@ pub async fn run_login(app: &AppHandle, client: &Client) -> Result<Session, AppE
     app.run_on_main_thread(move || {
         let result = (|| -> tauri::Result<()> {
             let window = WebviewWindowBuilder::new(&app_for_build, LOGIN_LABEL, WebviewUrl::External(target))
-                .title("登录 · 华为账号")
+                .title("登录 · 账号")
                 .inner_size(460.0, 700.0)
                 .min_inner_size(380.0, 560.0)
                 .center()
