@@ -72,21 +72,21 @@ function onVolume(event: Event) {
 
     <div class="keys">
       <button class="ghost" :title="modeLabel" @click="player.cycleMode()">
-        <Icon :name="modeIcon" :size="15" />
+        <Icon :name="modeIcon" :size="17" />
       </button>
 
       <button class="step" title="上一首" :disabled="!current" @click="player.previous()">
-        <Icon name="prev" :size="18" />
+        <Icon name="prev" :size="22" />
       </button>
       <button class="play" :disabled="!current" title="播放 / 暂停" @click="player.toggle()">
-        <Icon :name="state.playing ? 'pause' : 'play'" :size="20" />
+        <Icon :name="state.playing ? 'pause' : 'play'" :size="24" />
       </button>
       <button class="step" title="下一首" :disabled="!current" @click="player.next()">
-        <Icon name="next" :size="18" />
+        <Icon name="next" :size="22" />
       </button>
 
       <div class="vol">
-        <Icon name="volume" :size="14" />
+        <Icon name="volume" :size="16" />
         <input
           class="volume"
           type="range"

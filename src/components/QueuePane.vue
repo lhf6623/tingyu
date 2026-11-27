@@ -14,7 +14,7 @@ const { state } = player;
       <div class="spacer" />
       <button v-if="state.queue.length" class="clear" @click="player.clearQueue()">清空</button>
       <button class="close" title="收起" @click="player.toggleQueue()">
-        <Icon name="close" :size="13" />
+        <Icon name="close" :size="15" />
       </button>
     </header>
 
@@ -37,7 +37,7 @@ const { state } = player;
         </span>
         <span class="dur">{{ formatDuration(track.durationSeconds) }}</span>
         <button class="del" title="从队列移除" @click.stop="player.removeAt(index)">
-          <Icon name="close" :size="11" />
+          <Icon name="close" :size="13" />
         </button>
       </div>
     </div>

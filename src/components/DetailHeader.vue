@@ -15,7 +15,7 @@ const emit = defineEmits<{ back: []; playAll: [] }>();
 <template>
   <header class="detail">
     <button class="back" title="返回" @click="emit('back')">
-      <Icon name="back" :size="16" />
+      <Icon name="back" :size="17" />
     </button>
     <img v-if="coverUrl" class="cover" :src="coverUrl" alt="" />
     <span v-else class="cover" />
@@ -25,7 +25,7 @@ const emit = defineEmits<{ back: []; playAll: [] }>();
       <p v-if="meta" class="count">{{ meta }}</p>
     </div>
     <button v-if="playable" class="play-all" @click="emit('playAll')">
-      <Icon name="play" :size="12" />
+      <Icon name="play" :size="14" />
       播放全部
     </button>
   </header>

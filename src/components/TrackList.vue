@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
       <span v-if="showIndex" class="slot">
         <span class="idx">{{ String(index + 1).padStart(2, "0") }}</span>
         <button class="go" title="播放" @click.stop="emit('play', track, index)">
-          <Icon name="play" :size="11" />
+          <Icon name="play" :size="13" />
         </button>
       </span>
       <img v-if="track.coverUrl" class="cover" :src="track.coverUrl" alt="" loading="lazy" />
@@ -139,7 +139,7 @@ onBeforeUnmount(() => {
         title="收藏 / 取消收藏"
         @click.stop="toggleFavorite(track)"
       >
-        <Icon :name="library.isFavorite(track) ? 'heart-filled' : 'heart'" :size="14" />
+        <Icon :name="library.isFavorite(track) ? 'heart-filled' : 'heart'" :size="15" />
       </button>
     </div>
 

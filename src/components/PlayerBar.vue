@@ -61,7 +61,7 @@ function onVolume(event: Event) {
         <img v-if="current?.coverUrl" class="cover" :src="current.coverUrl" alt="" />
         <span v-else class="cover" />
         <span class="veil">
-          <Icon name="lyrics" :size="15" />
+          <Icon name="lyrics" :size="16" />
         </span>
       </button>
       <span class="meta">
@@ -72,13 +72,13 @@ function onVolume(event: Event) {
 
     <div class="controls">
       <button class="icon-btn" title="上一首" :disabled="!current" @click="player.previous()">
-        <Icon name="prev" :size="16" />
+        <Icon name="prev" :size="18" />
       </button>
       <button class="play" :disabled="!current" title="播放 / 暂停" @click="player.toggle()">
-        <Icon :name="state.playing ? 'pause' : 'play'" :size="15" />
+        <Icon :name="state.playing ? 'pause' : 'play'" :size="17" />
       </button>
       <button class="icon-btn" title="下一首" :disabled="!current" @click="player.next()">
-        <Icon name="next" :size="16" />
+        <Icon name="next" :size="18" />
       </button>
     </div>
 
@@ -100,7 +100,7 @@ function onVolume(event: Event) {
 
     <div class="right">
       <button class="icon-btn" :title="modeLabel" @click="player.cycleMode()">
-        <Icon :name="modeIcon" :size="15" />
+        <Icon :name="modeIcon" :size="16" />
       </button>
       <button
         class="pill"
@@ -115,11 +115,11 @@ function onVolume(event: Event) {
         title="播放队列"
         @click="player.toggleQueue()"
       >
-        <Icon name="list" :size="15" />
+        <Icon name="list" :size="16" />
       </button>
       <div class="volume">
         <button class="icon-btn" title="静音" @click="player.setVolume(state.volume > 0 ? 0 : 0.8)">
-          <Icon :name="state.volume > 0 ? 'volume' : 'mute'" :size="15" />
+          <Icon :name="state.volume > 0 ? 'volume' : 'mute'" :size="16" />
         </button>
         <input
           class="slider"
@@ -228,8 +228,8 @@ function onVolume(event: Event) {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 5px;
   color: var(--muted);
 }
@@ -252,8 +252,8 @@ function onVolume(event: Event) {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--text);
   color: var(--bg);

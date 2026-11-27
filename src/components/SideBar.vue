@@ -110,7 +110,7 @@ onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));
       :class="{ active: active === item.name }"
       @click="select(item.name)"
     >
-      <Icon :name="item.icon" :size="15" />
+      <Icon :name="item.icon" :size="17" />
       <span>{{ item.label }}</span>
     </button>
 
@@ -144,7 +144,7 @@ onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));
         title="设置"
         @click="openSettings"
       >
-        <Icon name="gear" :size="15" />
+        <Icon name="gear" :size="16" />
       </button>
     </div>
 

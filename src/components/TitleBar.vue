@@ -128,7 +128,7 @@ onBeforeUnmount(() => {
 
     <div ref="searchBox" class="search">
       <button class="search-btn" title="打开搜索页" @click="openSearchPage">
-        <Icon name="search" :size="13" />
+        <Icon name="search" :size="15" />
       </button>
       <input
         v-model="keyword"
@@ -188,13 +188,13 @@ onBeforeUnmount(() => {
 
     <div class="controls">
       <button class="ctl" title="最小化" @click="minimize">
-        <Icon name="win-min" :size="14" />
+        <Icon name="win-min" :size="15" />
       </button>
       <button class="ctl" :title="maximized ? '还原' : '最大化'" @click="toggleMaximize">
-        <Icon :name="maximized ? 'win-restore' : 'win-max'" :size="14" />
+        <Icon :name="maximized ? 'win-restore' : 'win-max'" :size="15" />
       </button>
       <button class="ctl close" title="关闭" @click="close">
-        <Icon name="close" :size="14" />
+        <Icon name="close" :size="15" />
       </button>
     </div>
   </header>

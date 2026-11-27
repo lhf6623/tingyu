@@ -30,7 +30,7 @@ const { state } = player;
         </span>
         <span class="dur">{{ formatDuration(track.durationSeconds) }}</span>
         <button class="del" title="从队列移除" @click.stop="player.removeAt(index)">
-          <Icon name="close" :size="11" />
+          <Icon name="close" :size="13" />
         </button>
       </div>
     </div>

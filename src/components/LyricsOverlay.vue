@@ -126,19 +126,19 @@ function jump(timeMs: number | null) {
 
     <header class="top" data-tauri-drag-region>
       <button class="back" @click="player.closeLyrics()">
-        <Icon name="back" :size="15" />
+        <Icon name="back" :size="16" />
         收起
       </button>
       <div class="spacer" data-tauri-drag-region />
       <div class="ctls">
         <button class="ctl" title="最小化" @click="minimize">
-          <Icon name="win-min" :size="14" />
+          <Icon name="win-min" :size="15" />
         </button>
         <button class="ctl" :title="maximized ? '还原' : '最大化'" @click="toggleMaximize">
-          <Icon :name="maximized ? 'win-restore' : 'win-max'" :size="14" />
+          <Icon :name="maximized ? 'win-restore' : 'win-max'" :size="15" />
         </button>
         <button class="ctl close" title="关闭" @click="close">
-          <Icon name="close" :size="14" />
+          <Icon name="close" :size="15" />
         </button>
       </div>
     </header>

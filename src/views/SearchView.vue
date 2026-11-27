@@ -38,7 +38,7 @@ function play(track: Track, index: number) {
     <div v-if="!compact" class="hero">
       <h1>搜索</h1>
       <label class="field">
-        <Icon name="search" :size="19" />
+        <Icon name="search" :size="21" />
         <input
           v-model="keyword"
           type="text"
@@ -47,7 +47,7 @@ function play(track: Track, index: number) {
           @keyup.enter="submit"
         />
         <button v-if="keyword" class="clear" title="清空" @click="keyword = ''">
-          <Icon name="close" :size="13" />
+          <Icon name="close" :size="15" />
         </button>
       </label>
       <p class="tip">输入歌名或艺人，回车开始搜索</p>
