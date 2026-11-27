@@ -156,19 +156,19 @@ onBeforeUnmount(() => {
   flex-direction: column;
 }
 
+/* 行与行之间靠留白和 hover 色块区分，不再逐行画分隔线 */
 .row {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 10px 8px 2px;
-  border-bottom: 0.5px solid var(--line);
-  border-radius: var(--r-sm);
+  padding: 9px 12px 9px 4px;
+  border-radius: var(--r-md);
   text-align: left;
   width: 100%;
 }
 
 .dense .row {
-  padding: 6px 10px 6px 2px;
+  padding: 7px 12px 7px 4px;
 }
 
 .row:hover {
@@ -311,8 +311,8 @@ onBeforeUnmount(() => {
   min-width: 124px;
   padding: 4px;
   background: var(--bg);
-  border: 0.5px solid var(--line-strong);
-  border-radius: var(--r-md);
+  box-shadow: var(--pop-shadow);
+  border-radius: var(--r-lg);
 }
 
 .ctx button {

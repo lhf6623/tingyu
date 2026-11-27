@@ -172,23 +172,26 @@ onMounted(() => void refreshCache());
   font-weight: 500;
 }
 
+/* 每个分组是白色面板里一块浅灰圆角卡，行之间靠留白分开，全站不再有横线 */
 .group {
-  margin-bottom: 26px;
+  margin-bottom: 14px;
+  padding: 14px 18px 16px;
+  background: var(--surface);
+  border-radius: var(--r-lg);
 }
 
 .group h3 {
   font-size: 12px;
   font-weight: 500;
   color: var(--muted);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 11px 0;
-  border-bottom: 0.5px solid var(--line);
+  padding: 9px 0;
 }
 
 .label {
@@ -211,8 +214,8 @@ onMounted(() => void refreshCache());
 .segmented {
   display: flex;
   gap: 2px;
-  padding: 2px;
-  border: 0.5px solid var(--line-strong);
+  padding: 3px;
+  background: var(--base);
   border-radius: var(--r-md);
 }
 
@@ -225,15 +228,17 @@ onMounted(() => void refreshCache());
 
 .segmented button.on {
   color: var(--text);
-  background: var(--surface);
+  background: var(--bg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.09);
 }
 
-.action {
+.action,
+.danger {
   font-size: 12px;
   color: var(--muted);
-  border: 0.5px solid var(--line-strong);
+  background: var(--bg);
   border-radius: var(--r-sm);
-  padding: 3px 12px;
+  padding: 4px 13px;
 }
 
 .action:hover {
@@ -241,11 +246,7 @@ onMounted(() => void refreshCache());
 }
 
 .danger {
-  font-size: 12px;
   color: var(--accent);
-  border: 0.5px solid var(--line-strong);
-  border-radius: var(--r-sm);
-  padding: 3px 12px;
 }
 
 .switch {

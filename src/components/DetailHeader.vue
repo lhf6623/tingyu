@@ -36,9 +36,8 @@ const emit = defineEmits<{ back: []; playAll: [] }>();
   display: flex;
   align-items: center;
   gap: 16px;
-  padding-bottom: 20px;
-  border-bottom: 0.5px solid var(--line);
-  margin-bottom: 8px;
+  padding: 2px 2px 22px;
+  margin-bottom: 12px;
 }
 
 .back {

@@ -107,9 +107,9 @@ function playAll() {
 .ghost {
   font-size: 12px;
   color: var(--muted);
-  border: 0.5px solid var(--line-strong);
+  background: var(--surface);
   border-radius: var(--r-sm);
-  padding: 3px 10px;
+  padding: 4px 12px;
 }
 
 .ghost:hover:not(:disabled) {

@@ -46,15 +46,15 @@ const { state } = player;
 
 <style scoped>
 .pane {
-  grid-column: 3;
-  grid-row: 2;
   display: flex;
   flex-direction: column;
   width: 320px;
   flex: none;
-  border-left: 0.5px solid var(--line);
-  background: var(--surface);
   min-height: 0;
+  /* 队列是白色面板里再凹进去的一块，四边留白 + 圆角，不靠竖线分区 */
+  margin: 10px 10px 10px 0;
+  background: var(--surface);
+  border-radius: var(--r-lg);
 }
 
 .head {

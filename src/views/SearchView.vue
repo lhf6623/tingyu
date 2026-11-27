@@ -104,15 +104,17 @@ function play(track: Track, index: number) {
   width: min(620px, 100%);
   height: 52px;
   padding: 0 18px;
-  border: 0.5px solid var(--line-strong);
   border-radius: var(--r-xl);
   color: var(--faint);
+  /* 大搜索框靠「浅灰下沉 → 聚焦时浮成白卡 + 投影」表达状态，没有描边 */
   background: var(--surface);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.05);
+  transition: background 0.15s ease, box-shadow 0.15s ease;
 }
 
 .field:focus-within {
-  border-color: var(--muted);
   background: var(--bg);
+  box-shadow: var(--pop-shadow);
 }
 
 .field input {

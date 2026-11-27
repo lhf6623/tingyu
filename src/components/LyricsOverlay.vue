@@ -280,7 +280,7 @@ function jump(timeMs: number | null) {
 
 .ctl:hover {
   color: var(--text);
-  background: var(--line);
+  background: var(--surface);
 }
 
 .ctl.close:hover {

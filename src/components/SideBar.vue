@@ -182,12 +182,11 @@ onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));
 <style scoped>
 .nav {
   grid-column: 1;
-  grid-row: 1 / -1;
+  grid-row: 1;
   display: flex;
   flex-direction: column;
-  background: var(--surface);
-  border-right: 0.5px solid var(--line);
-  padding: 14px 0 10px;
+  /* 侧栏不自己铺色，直接坐在整窗的底层上；与右侧浮层靠投影拉开距离 */
+  padding: 16px 0 10px;
   min-height: 0;
   position: relative;
 }
@@ -264,8 +263,7 @@ onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 10px 0 12px;
-  border-top: 0.5px solid var(--line);
+  padding: 12px 10px 0 12px;
   flex: none;
 }
 
@@ -332,8 +330,8 @@ onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));
   right: 10px;
   bottom: 46px;
   background: var(--bg);
-  border: 0.5px solid var(--line-strong);
-  border-radius: var(--r-md);
+  box-shadow: var(--pop-shadow);
+  border-radius: var(--r-lg);
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -345,8 +343,7 @@ onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));
   display: flex;
   align-items: center;
   gap: 9px;
-  padding: 2px 4px 10px;
-  border-bottom: 0.5px solid var(--line);
+  padding: 2px 4px 12px;
   margin-bottom: 6px;
 }
 

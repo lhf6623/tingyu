@@ -202,16 +202,15 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .titlebar {
-  grid-column: 2 / -1;
-  grid-row: 1;
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
   height: var(--titlebar-h);
   flex: none;
   padding-left: 16px;
-  background: var(--surface);
-  border-bottom: 0.5px solid var(--line);
+  /* 标题栏属于第二层面板内部，沿用面板底色，不再画下边线 */
+  background: transparent;
   user-select: none;
   position: relative;
   z-index: 40;
@@ -230,14 +229,15 @@ onBeforeUnmount(() => {
   height: 28px;
   width: 280px;
   padding: 0 11px;
-  border: 0.5px solid var(--line-strong);
   border-radius: var(--r-md);
   color: var(--faint);
-  background: var(--bg);
+  /* 输入框靠色块凹陷表达，聚焦时再沉一档，不用描边 */
+  background: var(--surface);
+  transition: background 0.14s ease;
 }
 
 .search:focus-within {
-  border-color: var(--muted);
+  background: var(--base);
 }
 
 .search-btn {
@@ -266,9 +266,8 @@ onBeforeUnmount(() => {
   overflow-y: auto;
   padding: 6px;
   background: var(--bg);
-  border: 0.5px solid var(--line-strong);
-  border-radius: var(--r-md);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  border-radius: var(--r-lg);
+  box-shadow: var(--pop-shadow);
 }
 
 .dd-head {
@@ -342,7 +341,7 @@ onBeforeUnmount(() => {
 
 .ctl:hover {
   color: var(--text);
-  background: var(--line);
+  background: var(--surface);
 }
 
 .ctl.close:hover {

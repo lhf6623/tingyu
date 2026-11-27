@@ -137,15 +137,15 @@ function onVolume(event: Event) {
 
 <style scoped>
 .bar {
-  grid-column: 2 / -1;
-  grid-row: 3;
   display: flex;
   align-items: center;
   gap: 18px;
+  width: 100%;
   height: var(--player-h);
+  flex: none;
   padding: 0 18px;
-  border-top: 0.5px solid var(--line);
-  background: var(--bg);
+  /* 播放栏是第二层面板的底边，靠圆角收口，不再画上边线 */
+  background: transparent;
 }
 
 .now {
@@ -332,9 +332,9 @@ function onVolume(event: Event) {
 .pill {
   font-size: 11px;
   color: var(--muted);
-  border: 0.5px solid var(--line-strong);
+  background: var(--surface);
   border-radius: var(--r-sm);
-  padding: 2px 6px;
+  padding: 2px 8px;
   line-height: 1.4;
 }
 

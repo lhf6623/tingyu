@@ -176,9 +176,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="app" :class="{ 'with-queue': queueVisible }">
-    <TitleBar />
-
+  <div class="app">
     <SideBar
       :authenticated="!!auth?.authenticated"
       :account-label="auth?.accountLabel"
@@ -187,25 +185,32 @@ onBeforeUnmount(() => {
       @relogin="doRelogin"
     />
 
-    <main class="main">
-      <div v-if="booting" class="center">正在检查登录状态…</div>
+    <!-- 右侧整块是浮在底层之上的「第二层」，四边留白 + 圆角 + 投影做出视觉差 -->
+    <div class="stage">
+      <TitleBar />
 
-      <div v-else-if="!auth?.authenticated" class="gate">
-        <h1>登录你的音乐账号</h1>
-        <p>在官方扫码页完成授权。本机只保存音乐会话，播放地址不落盘。</p>
-        <button class="primary" :disabled="loggingIn" @click="doLogin">
-          {{ loggingIn ? "等待授权…" : "扫码登录" }}
-        </button>
+      <div class="stage-body">
+        <main class="main">
+          <div v-if="booting" class="center">正在检查登录状态…</div>
+
+          <div v-else-if="!auth?.authenticated" class="gate">
+            <h1>登录你的音乐账号</h1>
+            <p>在官方扫码页完成授权。本机只保存音乐会话，播放地址不落盘。</p>
+            <button class="primary" :disabled="loggingIn" @click="doLogin">
+              {{ loggingIn ? "等待授权…" : "扫码登录" }}
+            </button>
+          </div>
+
+          <KeepAlive v-else :max="10">
+            <component :is="view" :key="keepKey" v-bind="viewProps" />
+          </KeepAlive>
+        </main>
+
+        <QueuePane v-if="queueVisible" />
       </div>
 
-      <KeepAlive v-else :max="10">
-        <component :is="view" :key="keepKey" v-bind="viewProps" />
-      </KeepAlive>
-    </main>
-
-    <QueuePane v-if="queueVisible" />
-
-    <PlayerBar />
+      <PlayerBar />
+    </div>
 
     <LyricsOverlay />
 
@@ -218,23 +223,45 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+/* 整窗是底层：左侧导航直接坐在这层色上；右侧 stage 与它之间留 10px 沟，
+ * 让投影和圆角有地方落，形成「左在后、右在前」的层次。 */
 .app {
   height: 100%;
   display: grid;
   grid-template-columns: var(--nav-w) minmax(0, 1fr);
-  grid-template-rows: var(--titlebar-h) minmax(0, 1fr) var(--player-h);
+  grid-template-rows: minmax(0, 1fr);
+  column-gap: 10px;
+  padding: 10px 10px 10px 0;
+  background: var(--base);
 }
 
-.app.with-queue {
-  grid-template-columns: var(--nav-w) minmax(0, 1fr) 320px;
+.stage {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+  border-radius: var(--r-xl);
+  box-shadow: var(--stage-shadow);
+}
+
+.stage-body {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
 }
 
 .main {
-  grid-column: 2;
-  grid-row: 2;
-  overflow-y: auto;
-  padding: 22px 24px 0;
+  flex: 1;
+  min-width: 0;
   min-height: 0;
+  overflow-y: auto;
+  padding: 20px 24px 0;
 }
 
 .center {
@@ -292,8 +319,8 @@ onBeforeUnmount(() => {
 .toast {
   font-size: 12px;
   color: var(--muted);
-  background: var(--surface);
-  border: 0.5px solid var(--line);
+  background: var(--bg);
+  box-shadow: var(--pop-shadow);
   border-radius: var(--r-md);
   padding: 6px 14px;
   max-width: 60vw;
