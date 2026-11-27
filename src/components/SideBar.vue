@@ -227,7 +227,6 @@ onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));
   min-height: 0;
   overflow-y: auto;
   padding-bottom: 8px;
-  scrollbar-width: thin;
 }
 
 .pitem {

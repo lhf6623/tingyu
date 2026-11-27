@@ -269,7 +269,6 @@ onBeforeUnmount(() => {
   border: 0.5px solid var(--line-strong);
   border-radius: 8px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  scrollbar-width: thin;
 }
 
 .dd-head {
