@@ -50,19 +50,25 @@ function onVolume(event: Event) {
 
 <template>
   <footer class="bar">
-    <button
-      class="now"
-      :disabled="!current"
-      :title="state.lyricsOpen ? '收起歌词' : '展开歌词'"
-      @click="toggleLyrics"
-    >
-      <img v-if="current?.coverUrl" class="cover" :src="current.coverUrl" alt="" />
-      <span v-else class="cover" />
+    <div class="now">
+      <button
+        class="cover-btn"
+        :disabled="!current"
+        :title="state.lyricsOpen ? '收起歌词' : '展开歌词'"
+        aria-label="展开歌词"
+        @click="toggleLyrics"
+      >
+        <img v-if="current?.coverUrl" class="cover" :src="current.coverUrl" alt="" />
+        <span v-else class="cover" />
+        <span class="veil">
+          <Icon name="lyrics" :size="15" />
+        </span>
+      </button>
       <span class="meta">
         <span class="title ellipsis">{{ current?.title ?? "未在播放" }}</span>
         <span class="sub ellipsis">{{ current ? artistText(current) : "" }}</span>
       </span>
-    </button>
+    </div>
 
     <div class="controls">
       <button class="icon-btn" title="上一首" :disabled="!current" @click="player.previous()">
@@ -102,14 +108,6 @@ function onVolume(event: Event) {
         @click="player.setQuality(state.quality === 'lossless' ? 'standard' : 'lossless')"
       >
         {{ state.quality === "lossless" ? "无损" : "标准" }}
-      </button>
-      <button
-        class="icon-btn"
-        :class="{ on: state.lyricsOpen }"
-        title="歌词"
-        @click="toggleLyrics"
-      >
-        <Icon name="lyrics" :size="15" />
       </button>
       <button
         class="icon-btn"
@@ -157,20 +155,51 @@ function onVolume(event: Event) {
   width: 200px;
   flex: none;
   min-width: 0;
-  text-align: left;
 }
 
-.now:disabled {
-  cursor: default;
-}
-
-.cover {
+/* 封面是唯一进入歌词页的入口，hover 时浮一层提示，明示可点。 */
+.cover-btn {
+  position: relative;
   width: 38px;
   height: 38px;
   flex: none;
   border-radius: 4px;
+  overflow: hidden;
+}
+
+.cover-btn:disabled {
+  cursor: default;
+}
+
+.cover {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
   background: var(--surface);
   object-fit: cover;
+  transition: transform 0.18s ease;
+}
+
+.cover-btn:hover:not(:disabled) .cover {
+  transform: scale(1.09);
+}
+
+.veil {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.cover-btn:hover:not(:disabled) .veil,
+.cover-btn:focus-visible .veil {
+  opacity: 1;
 }
 
 .meta {
