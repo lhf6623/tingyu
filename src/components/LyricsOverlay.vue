@@ -294,72 +294,62 @@ function jump(timeMs: number | null) {
   flex: 1;
   min-height: 0;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
+  align-items: stretch;
+  gap: 52px;
   width: 100%;
-  max-width: 1000px;
+  max-width: 1080px;
   margin: 0 auto;
   padding: 0 32px;
 }
 
-/* 曲目信息压成一行居中：小封面 + 曲名/艺人，把高度尽量让给歌词。 */
+/* 左栏：大封面 + 曲目信息，垂直居中。 */
 .meta-col {
+  width: 248px;
   flex: none;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  max-width: 100%;
+  align-self: center;
+  padding-bottom: 10px;
 }
 
 .cover {
   display: block;
-  width: 64px;
-  height: 64px;
+  width: 248px;
+  height: 248px;
   flex: none;
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--surface);
   object-fit: cover;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  margin-bottom: 18px;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.24);
 }
 
 .meta-text {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .title {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 500;
-  line-height: 1.4;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.45;
+  word-break: break-word;
 }
 
 .artists {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .album {
-  font-size: 11.5px;
+  font-size: 12px;
   color: var(--faint);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .lyric-col {
   flex: 1;
+  min-width: 0;
   min-height: 0;
-  width: 100%;
-  max-width: 720px;
   display: flex;
   flex-direction: column;
 }
@@ -368,6 +358,9 @@ function jump(timeMs: number | null) {
   /* offsetTop 要相对这一层算，否则滚到当前句会整体偏移。 */
   position: relative;
   flex: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
   overflow-y: auto;
   scrollbar-width: none;
   /* 上下边缘淡出，滚动时不会看见文字被切断。 */
