@@ -7,9 +7,9 @@ import { PLAY_MODE_META, usePlayer } from "../composables/usePlayer";
 /**
  * 歌词页自己的播放控制。
  *
- * 不复用底部播放栏：那一套是给「一边浏览一边听」设计的，
- * 信息密度高、控件小；歌词页整屏只有一首歌，控件要少、要大、要居中，
- * 所以这里单独写一份，只保留进度、上一首/播放/下一首、模式和音量。
+ * 不复用底部播放栏：那一套是给「一边浏览一边听」设计的，控件小、信息密；
+ * 歌词页整屏只有一首歌，只留进度、上一首/播放/下一首、模式和音量，
+ * 全部收在居中的一条线上，左右不散。
  */
 const player = usePlayer();
 const { state, current, progress } = player;
@@ -71,30 +71,21 @@ function onVolume(event: Event) {
     </div>
 
     <div class="keys">
-      <div class="side">
-        <button class="ghost" :title="modeLabel" @click="player.cycleMode()">
-          <Icon :name="modeIcon" :size="15" />
-        </button>
-      </div>
+      <button class="ghost" :title="modeLabel" @click="player.cycleMode()">
+        <Icon :name="modeIcon" :size="15" />
+      </button>
 
-      <div class="center">
-        <button
-          class="step"
-          title="上一首"
-          :disabled="!current"
-          @click="player.previous()"
-        >
-          <Icon name="prev" :size="18" />
-        </button>
-        <button class="play" :disabled="!current" title="播放 / 暂停" @click="player.toggle()">
-          <Icon :name="state.playing ? 'pause' : 'play'" :size="20" />
-        </button>
-        <button class="step" title="下一首" :disabled="!current" @click="player.next()">
-          <Icon name="next" :size="18" />
-        </button>
-      </div>
+      <button class="step" title="上一首" :disabled="!current" @click="player.previous()">
+        <Icon name="prev" :size="18" />
+      </button>
+      <button class="play" :disabled="!current" title="播放 / 暂停" @click="player.toggle()">
+        <Icon :name="state.playing ? 'pause' : 'play'" :size="20" />
+      </button>
+      <button class="step" title="下一首" :disabled="!current" @click="player.next()">
+        <Icon name="next" :size="18" />
+      </button>
 
-      <div class="side right">
+      <div class="vol">
         <Icon name="volume" :size="14" />
         <input
           class="volume"
@@ -113,22 +104,22 @@ function onVolume(event: Event) {
 <style scoped>
 .transport {
   flex: none;
-  padding: 0 4px 22px;
 }
 
 .seek-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .time {
   flex: none;
   width: 38px;
   font-size: 11px;
-  color: var(--faint);
+  color: var(--muted);
   font-variant-numeric: tabular-nums;
   text-align: center;
+  letter-spacing: 0.02em;
 }
 
 .seek {
@@ -145,7 +136,7 @@ function onVolume(event: Event) {
 .fill {
   position: absolute;
   left: 0;
-  height: 3px;
+  height: 2px;
   border-radius: 2px;
 }
 
@@ -174,28 +165,13 @@ function onVolume(event: Event) {
   opacity: 1;
 }
 
+/* 一条居中的控制带：模式 — 上一首 — 播放 — 下一首 — 音量，不往两边扯。 */
 .keys {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  margin-top: 4px;
-}
-
-.center {
   display: flex;
   align-items: center;
-  gap: 26px;
-}
-
-.side {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--muted);
-}
-
-.side.right {
-  justify-content: flex-end;
+  justify-content: center;
+  gap: 22px;
+  margin-top: 6px;
 }
 
 .step {
@@ -241,11 +217,18 @@ function onVolume(event: Event) {
 
 .ghost:hover {
   color: var(--text);
-  background: var(--surface);
+}
+
+.vol {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 6px;
+  color: var(--muted);
 }
 
 .volume {
-  width: 78px;
+  width: 76px;
   height: 16px;
   accent-color: var(--text);
   cursor: pointer;

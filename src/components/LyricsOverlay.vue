@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 import Icon from "./Icon.vue";
 import LyricsControls from "./LyricsControls.vue";
 import { artistText } from "../api";
@@ -11,7 +11,7 @@ import { useWindowControls } from "../composables/useWindowControls";
  *
  * 不做成独立路由：走路由就得卸载下层的侧栏和列表，返回时全部重建，
  * 而歌词本身是「在播放时临时看一眼」的操作，关掉应当原样回到原位置。
- * 这一层只盖住内容区与侧栏，标题栏（窗口按钮）和播放栏（播放控制）留在上层。
+ * 这一层盖住整个窗口（含标题栏与播放栏），窗口按钮与播放控制由它自己提供。
  */
 const player = usePlayer();
 const { state, current } = player;
@@ -20,14 +20,35 @@ const { maximized, minimize, toggleMaximize, close } = useWindowControls();
 
 const scroller = ref<HTMLDivElement | null>(null);
 const lineEls = ref<HTMLElement[]>([]);
+/**
+ * 上下留白 = 可视高度的一半，第一句和最后一句也能滚到正中。
+ * 固定 vh 在窗口高度不同时做不到这件事，所以按实际高度算。
+ */
+const pad = ref(0);
+let resizeObserver: ResizeObserver | undefined;
+
+function syncPad() {
+  const box = scroller.value;
+  pad.value = box ? Math.max(box.clientHeight / 2 - 22, 0) : 0;
+}
+
+/**
+ * 歌词里的空行（间奏占位）原来会渲染成一排 ♪，很杂。
+ * 这里只保留有文字的行；时间戳信息仍然保留，跳转和定位不受影响。
+ */
+const visibleLines = computed(() =>
+  (state.lyrics?.lines ?? []).filter(
+    (line) => line.text.trim().length > 0 || (line.translation ?? "").trim().length > 0,
+  ),
+);
 
 const activeIndex = computed(() => {
-  const doc = state.lyrics;
-  if (!doc?.synced) return -1;
+  if (!state.lyrics?.synced) return -1;
   const positionMs = state.position * 1000;
+  const lines = visibleLines.value;
   let found = -1;
-  for (let i = 0; i < doc.lines.length; i += 1) {
-    const time = doc.lines[i].timeMs;
+  for (let i = 0; i < lines.length; i += 1) {
+    const time = lines[i].timeMs;
     if (typeof time !== "number") continue;
     if (time <= positionMs) found = i;
     else break;
@@ -61,6 +82,21 @@ watch(
   },
 );
 
+// 容器高度变化（窗口缩放、切歌后歌词区变高）时重算留白。
+watch(
+  scroller,
+  (box) => {
+    resizeObserver?.disconnect();
+    if (!box) return;
+    syncPad();
+    resizeObserver = new ResizeObserver(syncPad);
+    resizeObserver.observe(box);
+  },
+  { flush: "post" },
+);
+
+onBeforeUnmount(() => resizeObserver?.disconnect());
+
 watch(
   () => current.value?.id,
   () => {
@@ -69,7 +105,8 @@ watch(
   },
 );
 
-const backdropStyle = computed(() =>
+/** 只用封面在左上角散一层光晕，不做整屏模糊——那样会把文字压成灰雾。 */
+const glowStyle = computed(() =>
   current.value?.coverUrl ? { backgroundImage: `url("${current.value.coverUrl}")` } : {},
 );
 
@@ -85,16 +122,13 @@ function jump(timeMs: number | null) {
 
 <template>
   <div v-if="state.lyricsOpen" class="overlay">
-    <div class="backdrop" :style="backdropStyle" />
+    <div class="glow" :style="glowStyle" />
 
     <header class="top" data-tauri-drag-region>
       <button class="back" @click="player.closeLyrics()">
         <Icon name="back" :size="15" />
         收起
       </button>
-      <span class="hint">
-        {{ state.lyrics?.synced ? "点任意一句可跳转 · Esc 收起" : "" }}
-      </span>
       <div class="spacer" data-tauri-drag-region />
       <div class="ctls">
         <button class="ctl" title="最小化" @click="minimize">
@@ -115,24 +149,35 @@ function jump(timeMs: number | null) {
       <aside class="meta-col">
         <img v-if="current.coverUrl" class="cover" :src="current.coverUrl" alt="" />
         <span v-else class="cover" />
-        <h1 class="title">{{ current.title }}</h1>
-        <p class="artists">{{ artistText(current) || "未知艺人" }}</p>
-        <p v-if="current.album" class="album">{{ current.album.title }}</p>
+        <div class="meta-text">
+          <h1 class="title">{{ current.title }}</h1>
+          <p class="artists">{{ artistText(current) || "未知艺人" }}</p>
+          <p v-if="current.album" class="album">{{ current.album.title }}</p>
+        </div>
       </aside>
 
       <div class="lyric-col">
-        <div v-if="state.lyricsLoading" class="empty small">正在获取歌词…</div>
-        <div v-else-if="!state.lyrics" class="empty small">这首歌没有可用歌词</div>
-        <div v-else ref="scroller" class="lines">
+        <div v-if="state.lyricsLoading" class="hint">正在获取歌词…</div>
+        <div v-else-if="!state.lyrics" class="hint">这首歌没有可用歌词</div>
+        <div
+          v-else
+          ref="scroller"
+          class="lines noscroll"
+          :style="{ paddingTop: pad + 'px', paddingBottom: pad + 'px' }"
+        >
           <p
-            v-for="(line, index) in state.lyrics.lines"
+            v-for="(line, index) in visibleLines"
             :key="index"
             :ref="(el) => setLineRef(el as Element | null, index)"
             class="line"
-            :class="{ active: index === activeIndex, tappable: line.timeMs !== null }"
+            :class="{
+              active: index === activeIndex,
+              tappable: line.timeMs !== null,
+              meta: line.timeMs === null,
+            }"
             @click="jump(line.timeMs)"
           >
-            <span class="text">{{ line.text || "♪" }}</span>
+            <span class="text">{{ line.text }}</span>
             <span v-if="line.translation" class="translation">{{ line.translation }}</span>
           </p>
         </div>
@@ -152,46 +197,49 @@ function jump(timeMs: number | null) {
   z-index: 50;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   background: var(--bg);
-  animation: overlay-in 0.16s ease;
+  overflow: hidden;
+  animation: overlay-in 0.18s ease;
 }
 
 @keyframes overlay-in {
   from {
     opacity: 0;
-    transform: translateY(6px);
   }
   to {
     opacity: 1;
-    transform: none;
   }
 }
 
-/* 用当前封面做一层模糊底色，避免整块纯色显得空。 */
-.backdrop {
+/* 封面只在左上角散一层虚光，越靠右下越淡，保证歌词区域的底色是干净的。 */
+.glow {
   position: absolute;
-  inset: -15%;
+  top: -25%;
+  left: -8%;
+  width: 78%;
+  height: 82%;
   background-position: center;
   background-size: cover;
-  filter: blur(64px) saturate(1.3);
-  opacity: 0.28;
+  filter: blur(96px) saturate(1.15);
+  opacity: 0.34;
+  transform: scale(1.1);
   pointer-events: none;
-}
-
-.top,
-.stage,
-.empty {
-  position: relative;
-  z-index: 1;
+  mask-image: radial-gradient(72% 68% at 28% 26%, #000 0%, rgba(0, 0, 0, 0.45) 45%, transparent 76%);
+  -webkit-mask-image: radial-gradient(
+    72% 68% at 28% 26%,
+    #000 0%,
+    rgba(0, 0, 0, 0.45) 45%,
+    transparent 76%
+  );
 }
 
 .top {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
-  gap: 12px;
   height: var(--titlebar-h);
-  padding-left: 14px;
+  padding-left: 12px;
   flex: none;
 }
 
@@ -201,13 +249,18 @@ function jump(timeMs: number | null) {
   gap: 4px;
   font-size: 12px;
   color: var(--muted);
-  padding: 4px 8px 4px 4px;
+  padding: 4px 9px 4px 4px;
   border-radius: 5px;
 }
 
 .back:hover {
   color: var(--text);
   background: var(--surface);
+}
+
+.spacer {
+  flex: 1;
+  align-self: stretch;
 }
 
 .ctls {
@@ -235,98 +288,100 @@ function jump(timeMs: number | null) {
   background: #c8443c;
 }
 
-.hint {
-  font-size: 11px;
-  color: var(--faint);
-}
-
-.spacer {
-  flex: 1;
-}
-
 .stage {
-  display: flex;
-  gap: 52px;
-  flex: 1;
-  min-height: 0;
-  padding: 6px 32px 0;
-  max-width: 1240px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-.transport-wrap {
-  flex: none;
-  width: 100%;
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 0 32px;
   position: relative;
   z-index: 1;
-}
-
-.meta-col {
-  width: 232px;
-  flex: none;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* 曲目信息压成一行居中：小封面 + 曲名/艺人，把高度尽量让给歌词。 */
+.meta-col {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 100%;
 }
 
 .cover {
-  width: 232px;
-  height: 232px;
+  display: block;
+  width: 64px;
+  height: 64px;
+  flex: none;
   border-radius: 8px;
   background: var(--surface);
   object-fit: cover;
-  margin-bottom: 16px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+.meta-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .title {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 500;
   line-height: 1.4;
-  word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .artists {
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .album {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .lyric-col {
   flex: 1;
-  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  max-width: 720px;
   display: flex;
   flex-direction: column;
 }
 
 .lines {
+  /* offsetTop 要相对这一层算，否则滚到当前句会整体偏移。 */
+  position: relative;
   flex: 1;
   overflow-y: auto;
-  padding: 4px 0 36vh;
-  scrollbar-width: thin;
-  max-width: 660px;
-}
-
-/* 沉浸模式下隐藏滚动条：歌词是跟随播放滚动的，不是拿来拖的。 */
-.lines::-webkit-scrollbar {
-  width: 0;
+  scrollbar-width: none;
+  /* 上下边缘淡出，滚动时不会看见文字被切断。 */
+  mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
 }
 
 .line {
-  padding: 11px 0;
-  font-size: 16px;
+  padding: 10px 0;
+  font-size: 18px;
   line-height: 1.6;
-  color: var(--faint);
-  transition: color 0.18s ease, font-size 0.18s ease;
+  color: var(--muted);
+  text-align: center;
+  transition: color 0.18s ease;
 }
 
 .line.tappable {
@@ -334,13 +389,24 @@ function jump(timeMs: number | null) {
 }
 
 .line:hover {
-  color: var(--muted);
+  color: var(--text);
 }
 
 .line.active {
   color: var(--text);
-  font-size: 18px;
-  font-weight: 500;
+  font-weight: 600;
+}
+
+/* 词曲编曲这类署名没有时间戳，压小一档，不和歌词抢注意力。 */
+.line.meta {
+  padding: 3px 0;
+  font-size: 13px;
+  color: var(--faint);
+}
+
+.line.meta.active {
+  color: var(--muted);
+  font-weight: 400;
 }
 
 .text {
@@ -349,10 +415,30 @@ function jump(timeMs: number | null) {
 
 .translation {
   display: block;
-  margin-top: 3px;
-  font-size: 12.5px;
-  color: var(--faint);
+  margin-top: 4px;
+  font-size: 13px;
   font-weight: 400;
+  color: var(--faint);
+}
+
+.line.active .translation {
+  color: var(--muted);
+}
+
+.transport-wrap {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 32px 26px;
+}
+
+.hint {
+  padding-top: 12vh;
+  font-size: 13px;
+  color: var(--faint);
 }
 
 .empty {
@@ -363,10 +449,12 @@ function jump(timeMs: number | null) {
   font-size: 13px;
   color: var(--faint);
 }
+</style>
 
-.empty.small {
-  font-size: 12px;
-  padding: 40px 0;
-  align-items: flex-start;
+<style>
+/* WebView 的默认滚动条在浅色主题下是一条很扎眼的白条，歌词区不需要它。 */
+.noscroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 </style>
