@@ -250,7 +250,7 @@ function jump(timeMs: number | null) {
   font-size: 12px;
   color: var(--muted);
   padding: 4px 9px 4px 4px;
-  border-radius: 5px;
+  border-radius: var(--r-sm);
 }
 
 .back:hover {
@@ -315,7 +315,7 @@ function jump(timeMs: number | null) {
   width: 248px;
   height: 248px;
   flex: none;
-  border-radius: 10px;
+  border-radius: var(--r-lg);
   background: var(--surface);
   object-fit: cover;
   margin-bottom: 18px;

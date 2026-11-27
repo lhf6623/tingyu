@@ -2,58 +2,68 @@
 import { computed } from "vue";
 
 /**
- * 手写图标集（24 网格 / 1.75 描边 / 圆角端点）。
+ * 手写图标集（24 网格 / 2.0 描边 / 圆头圆角）。
  *
- * 之前的 1.6 描边画到 13–15px 时实际只有 0.9px，发虚、显小气。
- * 现在统一 1.75，并把实心图形（播放、暂停、上一首/下一首）单独按视觉重量调过：
- * 三角形的视觉面积比同尺寸的描边图形小，所以放大一档才和别的图标等重。
+ * 统一规格：描边 2、端点与拐角全部 round，矩形用 2–2.5 的圆角。
+ * 实心图形（播放、暂停、上下首）同时给同色描边，靠 linejoin:round 把尖角磨圆，
+ * 视觉重量才和描边图标一致。
  */
 const props = withDefaults(defineProps<{ name: string; size?: number }>(), { size: 18 });
 
+const ROUND =
+  'stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"';
+
 const PATHS: Record<string, string> = {
-  play: '<path d="M9 5.9v12.2L18.8 12z" fill="currentColor" stroke="none"/>',
+  play: `<path d="M9.6 6.8v10.4L18.2 12z" fill="currentColor" ${ROUND}/>`,
   pause:
-    '<rect x="7.6" y="5.5" width="3.2" height="13" rx="1.1" fill="currentColor" stroke="none"/><rect x="13.2" y="5.5" width="3.2" height="13" rx="1.1" fill="currentColor" stroke="none"/>',
+    `<rect x="7.7" y="6.2" width="2.8" height="11.6" rx="1.4" fill="currentColor" ${ROUND}/>` +
+    `<rect x="13.5" y="6.2" width="2.8" height="11.6" rx="1.4" fill="currentColor" ${ROUND}/>`,
   prev:
-    '<path d="M18.4 6.7v10.6L10 12z" fill="currentColor" stroke="none"/><rect x="5.2" y="5.8" width="2.2" height="12.4" rx="1.1" fill="currentColor" stroke="none"/>',
+    `<path d="M18 6.9v10.2L10.6 12z" fill="currentColor" ${ROUND}/>` +
+    `<rect x="5.4" y="6.2" width="2.2" height="11.6" rx="1.1" fill="currentColor" ${ROUND}/>`,
   next:
-    '<path d="M5.6 6.7v10.6L14 12z" fill="currentColor" stroke="none"/><rect x="16.6" y="5.8" width="2.2" height="12.4" rx="1.1" fill="currentColor" stroke="none"/>',
+    `<path d="M6 6.9v10.2L13.4 12z" fill="currentColor" ${ROUND}/>` +
+    `<rect x="16.4" y="6.2" width="2.2" height="11.6" rx="1.1" fill="currentColor" ${ROUND}/>`,
   heart:
-    '<path d="M12 19.7l-1.1-1C6.4 14.9 4 12.7 4 10a4 4 0 0 1 4-3.9c1.5 0 2.9.8 4 2 1.1-1.2 2.5-2 4-2A4 4 0 0 1 20 10c0 2.7-2.4 4.9-6.9 8.7z"/>',
+    '<path d="M12 19.4l-1-1C6.6 14.8 4.3 12.6 4.3 10A3.9 3.9 0 0 1 8.2 6.1c1.5 0 2.9.8 3.8 2 1-1.2 2.4-2 3.9-2A3.9 3.9 0 0 1 19.7 10c0 2.6-2.3 4.8-6.7 8.4z"/>',
   "heart-filled":
-    '<path d="M12 19.7l-1.1-1C6.4 14.9 4 12.7 4 10a4 4 0 0 1 4-3.9c1.5 0 2.9.8 4 2 1.1-1.2 2.5-2 4-2A4 4 0 0 1 20 10c0 2.7-2.4 4.9-6.9 8.7z" fill="currentColor"/>',
-  search: '<circle cx="11" cy="11" r="6.3"/><path d="M15.7 15.7L20 20"/>',
-  list: '<path d="M4 6.8h15.5M4 12h15.5M4 17.2h9.5"/>',
+    '<path d="M12 19.4l-1-1C6.6 14.8 4.3 12.6 4.3 10A3.9 3.9 0 0 1 8.2 6.1c1.5 0 2.9.8 3.8 2 1-1.2 2.4-2 3.9-2A3.9 3.9 0 0 1 19.7 10c0 2.6-2.3 4.8-6.7 8.4z" fill="currentColor"/>',
+  search: '<circle cx="10.9" cy="10.9" r="6.1"/><path d="M15.4 15.4L19.8 19.8"/>',
+  list: '<path d="M4.2 7h15.6M4.2 12h15.6M4.2 17h10"/>',
   "list-plus":
-    '<path d="M4 6.8h13M4 12h13M4 17.2h8"/><path d="M18.4 12.6v6.2M15.3 15.7h6.2"/>',
-  note: '<circle cx="7" cy="17.8" r="2.7"/><path d="M9.7 17.8V6.6L19 4.8v10.4"/><circle cx="16.3" cy="15.2" r="2.7"/>',
-  back: '<path d="M14.6 5.4L8 12l6.6 6.6"/>',
-  repeat:
-    '<path d="M4.2 11.4V9.9a3.7 3.7 0 0 1 3.7-3.7h9.6"/><path d="M15.6 3.4l2.9 2.8-2.9 2.8"/><path d="M19.8 12.6v1.5a3.7 3.7 0 0 1-3.7 3.7H6.5"/><path d="M8.4 20.6l-2.9-2.8 2.9-2.8"/>',
+    '<path d="M4.2 7h13M4.2 12h13M4.2 17h8"/><path d="M18.6 12.6v6M15.6 15.6h6"/>',
+  note: '<circle cx="7.2" cy="17.6" r="2.7"/><path d="M9.9 17.6V6.8L18.8 5v10"/><circle cx="16.1" cy="15" r="2.7"/>',
+  back: '<path d="M14.4 5.8L8.2 12l6.2 6.2"/>',
+  /* 循环改成单环缺口 + 一个箭头：原来的双环双箭头在 16px 下会糊成一团。 */
+  repeat: '<path d="M19.8 12a7.8 7.8 0 1 1-2.4-5.6"/><path d="M19.9 4.4v4.3h-4.3"/>',
   "repeat-one":
-    '<path d="M4.2 11.4V9.9a3.7 3.7 0 0 1 3.7-3.7h9.6"/><path d="M15.6 3.4l2.9 2.8-2.9 2.8"/><path d="M19.8 12.6v1.5a3.7 3.7 0 0 1-3.7 3.7H6.5"/><path d="M8.4 20.6l-2.9-2.8 2.9-2.8"/><path d="M11.5 10.4l1.3-.9v4.9"/>',
+    '<path d="M19.8 12a7.8 7.8 0 1 1-2.4-5.6"/><path d="M19.9 4.4v4.3h-4.3"/><path d="M10.9 10.6l1.5-1v5"/>',
   shuffle:
-    '<path d="M4 6.6h3.4l8.4 10.8h3.6"/><path d="M4 17.4h3.4l2.6-3.4"/><path d="M16.4 3.4l3 3.2-3 3.2"/><path d="M16.4 14l3 3.2-3 3.2"/>',
+    '<path d="M4.2 6.8h3.2l8.4 10.4h3.6"/><path d="M4.2 17.2h3.2l2.6-3.2"/><path d="M16.2 3.8l2.8 3-2.8 3"/><path d="M16.2 14.2l2.8 3-2.8 3"/>',
   order:
-    '<path d="M4 6.9h10M4 12h10M4 17.1h6.5"/><path d="M18 5.2v13.6"/><path d="M15.2 15.8L18 18.6l2.8-2.8"/>',
+    '<path d="M4.2 7h9.6M4.2 12h9.6M4.2 17h6"/><path d="M18 5.4v13.2"/><path d="M15.2 15.8L18 18.6l2.8-2.8"/>',
   volume:
-    '<path d="M4.6 9.4h3.1l4.6-3.7v12.6l-4.6-3.7H4.6z"/><path d="M15.6 9.6a3.3 3.3 0 0 1 0 4.8"/><path d="M18 7.4a6.6 6.6 0 0 1 0 9.2"/>',
-  mute: '<path d="M4.6 9.4h3.1l4.6-3.7v12.6l-4.6-3.7H4.6z"/><path d="M15.4 10l4.4 4.4M19.8 10l-4.4 4.4"/>',
-  close: '<path d="M6.3 6.3l11.4 11.4M17.7 6.3L6.3 17.7"/>',
-  "win-min": '<path d="M6.5 12h11"/>',
-  "win-max": '<rect x="7" y="7" width="10" height="10" rx="1"/>',
+    '<path d="M4.9 9.6h3l4.4-3.6v12l-4.4-3.6H4.9z"/><path d="M15.6 9.8a3.3 3.3 0 0 1 0 4.4"/><path d="M18 7.6a6.4 6.4 0 0 1 0 8.8"/>',
+  mute: '<path d="M4.9 9.6h3l4.4-3.6v12l-4.4-3.6H4.9z"/><path d="M15.4 10.2l4.2 4.2M19.6 10.2l-4.2 4.2"/>',
+  close: '<path d="M6.6 6.6l10.8 10.8M17.4 6.6L6.6 17.4"/>',
+  "win-min": '<path d="M6.6 12h10.8"/>',
+  "win-max": '<rect x="7.2" y="7.2" width="9.6" height="9.6" rx="2.4"/>',
   "win-restore":
-    '<rect x="8.6" y="8.6" width="8.6" height="8.6" rx="1"/><path d="M6.8 15.2V8.2a1.4 1.4 0 0 1 1.4-1.4h7"/>',
-  lyrics: '<path d="M4 7h16M4 12h10.5M4 17h13"/>',
+    '<rect x="9.2" y="9.2" width="7.6" height="7.6" rx="2"/><path d="M7.2 14.6V8.8a1.6 1.6 0 0 1 1.6-1.6h5.4"/>',
+  /* 歌词：三段线和「列表」分不出来，改成带两行文字的气泡。 */
+  lyrics:
+    '<path d="M4.6 7.6A2.4 2.4 0 0 1 7 5.2h10a2.4 2.4 0 0 1 2.4 2.4v6.2a2.4 2.4 0 0 1-2.4 2.4h-5.8l-3.4 2.8v-2.8H7a2.4 2.4 0 0 1-2.4-2.4z"/><path d="M8.6 9.4h6.8M8.6 12.4h4.4"/>',
   folder:
-    '<path d="M4 7.6A1.6 1.6 0 0 1 5.6 6h3.3l2 2.3h7.5A1.6 1.6 0 0 1 20 9.9v7.5A1.6 1.6 0 0 1 18.4 19H5.6A1.6 1.6 0 0 1 4 17.4z"/>',
-  clock: '<circle cx="12" cy="12" r="8.2"/><path d="M12 7.4V12l3.1 1.9"/>',
-  /* 设置用「滑块」而不是齿轮：齿轮在小尺寸下容易糊成一团。 */
+    '<path d="M4.2 7.8A1.8 1.8 0 0 1 6 6h3.2l2 2.3h7A1.8 1.8 0 0 1 20 10.1v7.3a1.8 1.8 0 0 1-1.8 1.8H6a1.8 1.8 0 0 1-1.8-1.8z"/>',
+  clock: '<circle cx="12" cy="12" r="8"/><path d="M12 7.6V12l3 1.8"/>',
+  /* 设置用「滑块」而不是齿轮：齿轮在小尺寸下齿牙会粘连，滑块全是圆头。 */
   gear:
-    '<path d="M3.6 8.4h5.8M14.2 8.4h6.2"/><circle cx="11.8" cy="8.4" r="2.4"/><path d="M3.6 15.6h8.6M17 15.6h3.4"/><circle cx="14.6" cy="15.6" r="2.4"/>',
-  /* 发现用罗盘，比四角星更有指向性。 */
+    '<path d="M3.8 8.4h5.6M14.4 8.4h5.8"/><circle cx="11.9" cy="8.4" r="2.3" fill="currentColor" stroke="none"/>' +
+    '<path d="M3.8 15.6h8.2M17.6 15.6h2.6"/><circle cx="14.9" cy="15.6" r="2.3" fill="currentColor" stroke="none"/>',
+  /* 发现用罗盘：描边菱形针 + 中心点，实心针会读成「禁止」。 */
+  /* 发现用四角星：罗盘在小尺寸下会和「禁止」混淆，星形没有歧义。 */
   spark:
-    '<circle cx="12" cy="12" r="8.2"/><path d="M15.5 8.5l-1.9 4.7-4.7 1.9 1.9-4.7z" fill="currentColor" stroke="none"/>',
+    '<path d="M12 4.4l1.9 5.7 5.7 1.9-5.7 1.9L12 19.6l-1.9-5.7L4.4 12l5.7-1.9z"/>',
 };
 
 const body = computed(() => PATHS[props.name] ?? "");
@@ -66,7 +76,7 @@ const body = computed(() => PATHS[props.name] ?? "");
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    stroke-width="1.75"
+    stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"
     aria-hidden="true"

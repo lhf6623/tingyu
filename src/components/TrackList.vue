@@ -162,7 +162,7 @@ onBeforeUnmount(() => {
   gap: 12px;
   padding: 8px 10px 8px 2px;
   border-bottom: 0.5px solid var(--line);
-  border-radius: 4px;
+  border-radius: var(--r-sm);
   text-align: left;
   width: 100%;
 }
@@ -222,7 +222,7 @@ onBeforeUnmount(() => {
   width: 32px;
   height: 32px;
   flex: none;
-  border-radius: 4px;
+  border-radius: var(--r-sm);
   background: var(--surface);
   object-fit: cover;
 }
@@ -312,7 +312,7 @@ onBeforeUnmount(() => {
   padding: 4px;
   background: var(--bg);
   border: 0.5px solid var(--line-strong);
-  border-radius: 6px;
+  border-radius: var(--r-md);
 }
 
 .ctx button {
@@ -320,7 +320,7 @@ onBeforeUnmount(() => {
   color: var(--text);
   text-align: left;
   padding: 6px 10px;
-  border-radius: 4px;
+  border-radius: var(--r-sm);
 }
 
 .ctx button:hover {

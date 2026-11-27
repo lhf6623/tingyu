@@ -137,7 +137,7 @@ function onVolume(event: Event) {
   position: absolute;
   left: 0;
   height: 2px;
-  border-radius: 2px;
+  border-radius: var(--r-pill);
 }
 
 .rail {
@@ -211,7 +211,7 @@ function onVolume(event: Event) {
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius: 5px;
+  border-radius: var(--r-sm);
   color: var(--muted);
 }
 

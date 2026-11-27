@@ -108,7 +108,7 @@ function playAll() {
   font-size: 12px;
   color: var(--muted);
   border: 0.5px solid var(--line-strong);
-  border-radius: 5px;
+  border-radius: var(--r-sm);
   padding: 3px 10px;
 }
 

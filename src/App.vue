@@ -267,7 +267,7 @@ onBeforeUnmount(() => {
   background: var(--text);
   color: var(--bg);
   font-size: 13px;
-  border-radius: 7px;
+  border-radius: var(--r-md);
   padding: 9px 22px;
 }
 
@@ -294,7 +294,7 @@ onBeforeUnmount(() => {
   color: var(--muted);
   background: var(--surface);
   border: 0.5px solid var(--line);
-  border-radius: 6px;
+  border-radius: var(--r-md);
   padding: 6px 14px;
   max-width: 60vw;
 }

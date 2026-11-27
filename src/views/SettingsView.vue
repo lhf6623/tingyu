@@ -213,14 +213,14 @@ onMounted(() => void refreshCache());
   gap: 2px;
   padding: 2px;
   border: 0.5px solid var(--line-strong);
-  border-radius: 6px;
+  border-radius: var(--r-md);
 }
 
 .segmented button {
   font-size: 12px;
   color: var(--faint);
   padding: 3px 12px;
-  border-radius: 4px;
+  border-radius: var(--r-sm);
 }
 
 .segmented button.on {
@@ -232,7 +232,7 @@ onMounted(() => void refreshCache());
   font-size: 12px;
   color: var(--muted);
   border: 0.5px solid var(--line-strong);
-  border-radius: 5px;
+  border-radius: var(--r-sm);
   padding: 3px 12px;
 }
 
@@ -244,7 +244,7 @@ onMounted(() => void refreshCache());
   font-size: 12px;
   color: var(--accent);
   border: 0.5px solid var(--line-strong);
-  border-radius: 5px;
+  border-radius: var(--r-sm);
   padding: 3px 12px;
 }
 
@@ -252,7 +252,7 @@ onMounted(() => void refreshCache());
   position: relative;
   width: 34px;
   height: 19px;
-  border-radius: 10px;
+  border-radius: var(--r-lg);
   background: var(--line-strong);
   transition: background 0.15s ease;
   flex: none;

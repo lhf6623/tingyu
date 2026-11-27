@@ -195,28 +195,31 @@ onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));
 .item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  height: 34px;
-  padding: 0 18px;
+  gap: 11px;
+  height: 36px;
+  margin: 0 8px;
+  padding: 0 10px;
   font-size: 13px;
   color: var(--muted);
-  border-left: 2px solid transparent;
+  border-radius: var(--r-md);
   text-align: left;
   flex: none;
+  transition: background 0.13s ease, color 0.13s ease;
 }
 
 .item:hover {
   color: var(--text);
+  background: var(--bg);
 }
 
 .item.active {
   color: var(--text);
   font-weight: 500;
-  border-left-color: var(--text);
+  background: var(--bg);
 }
 
 .section {
-  padding: 16px 18px 6px;
+  padding: 18px 18px 8px;
   font-size: 11px;
   color: var(--faint);
   flex: none;
@@ -231,12 +234,14 @@ onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));
 
 .pitem {
   display: block;
-  width: 100%;
+  width: calc(100% - 16px);
+  margin: 0 8px;
   text-align: left;
-  padding: 6px 18px;
+  padding: 6px 10px;
   font-size: 12px;
   color: var(--muted);
-  border-left: 2px solid transparent;
+  border-radius: var(--r-sm);
+  transition: background 0.13s ease, color 0.13s ease;
 }
 
 .pitem:hover {
@@ -246,7 +251,6 @@ onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));
 
 .pitem.active {
   color: var(--text);
-  border-left-color: var(--text);
   background: var(--bg);
 }
 
@@ -272,7 +276,7 @@ onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));
   flex: 1;
   min-width: 0;
   padding: 5px 6px;
-  border-radius: 6px;
+  border-radius: var(--r-md);
   text-align: left;
 }
 
@@ -312,7 +316,7 @@ onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));
   width: 26px;
   height: 26px;
   flex: none;
-  border-radius: 5px;
+  border-radius: var(--r-sm);
   color: var(--muted);
 }
 
@@ -329,7 +333,7 @@ onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));
   bottom: 46px;
   background: var(--bg);
   border: 0.5px solid var(--line-strong);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -367,7 +371,7 @@ onBeforeUnmount(() => window.removeEventListener("click", onDocumentClick));
   color: var(--text);
   text-align: left;
   padding: 6px;
-  border-radius: 4px;
+  border-radius: var(--r-sm);
 }
 
 .account-action:hover {

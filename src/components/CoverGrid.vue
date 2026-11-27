@@ -35,7 +35,7 @@ const emit = defineEmits<{ select: [playlist: Playlist] }>();
 .cover {
   width: 100%;
   aspect-ratio: 1;
-  border-radius: 6px;
+  border-radius: var(--r-md);
   background: var(--surface);
   object-fit: cover;
   transition: opacity 0.15s ease;

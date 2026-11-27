@@ -10,6 +10,12 @@
   --nav-w: 202px;
   --titlebar-h: 38px;
   --player-h: 64px;
+  /* 圆角标度：全站统一走这四档，不再各写各的 px */
+  --r-sm: 8px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 18px;
+  --r-pill: 999px;
   --scroll-thumb: rgba(0, 0, 0, 0.16);
   --scroll-thumb-hover: rgba(0, 0, 0, 0.3);
   font-synthesis: none;

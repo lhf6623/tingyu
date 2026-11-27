@@ -70,7 +70,7 @@ const { state } = player;
   align-items: center;
   gap: 8px;
   padding: 6px 8px;
-  border-radius: 4px;
+  border-radius: var(--r-sm);
   cursor: pointer;
 }
 
@@ -123,7 +123,7 @@ const { state } = player;
   justify-content: center;
   width: 18px;
   height: 18px;
-  border-radius: 3px;
+  border-radius: var(--r-sm);
   color: var(--faint);
   opacity: 0;
 }

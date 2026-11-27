@@ -163,7 +163,7 @@ function onVolume(event: Event) {
   width: 38px;
   height: 38px;
   flex: none;
-  border-radius: 4px;
+  border-radius: var(--r-sm);
   overflow: hidden;
 }
 
@@ -175,7 +175,7 @@ function onVolume(event: Event) {
   display: block;
   width: 100%;
   height: 100%;
-  border-radius: 4px;
+  border-radius: var(--r-sm);
   background: var(--surface);
   object-fit: cover;
   transition: transform 0.18s ease;
@@ -230,7 +230,7 @@ function onVolume(event: Event) {
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius: 5px;
+  border-radius: var(--r-sm);
   color: var(--muted);
 }
 
@@ -296,7 +296,7 @@ function onVolume(event: Event) {
   left: 0;
   right: 0;
   height: 3px;
-  border-radius: 2px;
+  border-radius: var(--r-pill);
   background: var(--line-strong);
 }
 
@@ -304,7 +304,7 @@ function onVolume(event: Event) {
   position: absolute;
   left: 0;
   height: 3px;
-  border-radius: 2px;
+  border-radius: var(--r-pill);
   background: var(--text);
 }
 
@@ -333,7 +333,7 @@ function onVolume(event: Event) {
   font-size: 11px;
   color: var(--muted);
   border: 0.5px solid var(--line-strong);
-  border-radius: 4px;
+  border-radius: var(--r-sm);
   padding: 2px 6px;
   line-height: 1.4;
 }
@@ -353,7 +353,7 @@ function onVolume(event: Event) {
   height: 3px;
   appearance: none;
   background: var(--line-strong);
-  border-radius: 2px;
+  border-radius: var(--r-pill);
   cursor: pointer;
 }
 

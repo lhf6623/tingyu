@@ -47,7 +47,7 @@ const emit = defineEmits<{ back: []; playAll: [] }>();
   justify-content: center;
   width: 26px;
   height: 26px;
-  border-radius: 5px;
+  border-radius: var(--r-sm);
   color: var(--muted);
   flex: none;
 }
@@ -61,7 +61,7 @@ const emit = defineEmits<{ back: []; playAll: [] }>();
   width: 96px;
   height: 96px;
   flex: none;
-  border-radius: 6px;
+  border-radius: var(--r-md);
   background: var(--surface);
   object-fit: cover;
 }
@@ -96,7 +96,7 @@ const emit = defineEmits<{ back: []; playAll: [] }>();
   font-size: 12px;
   color: var(--bg);
   background: var(--text);
-  border-radius: 6px;
+  border-radius: var(--r-md);
   padding: 6px 14px;
 }
 </style>

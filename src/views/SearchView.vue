@@ -105,7 +105,7 @@ function play(track: Track, index: number) {
   height: 52px;
   padding: 0 18px;
   border: 0.5px solid var(--line-strong);
-  border-radius: 12px;
+  border-radius: var(--r-xl);
   color: var(--faint);
   background: var(--surface);
 }

@@ -107,7 +107,7 @@ function openAlbum(album: AlbumCard) {
 .cover {
   width: 100%;
   aspect-ratio: 1;
-  border-radius: 6px;
+  border-radius: var(--r-md);
   background: var(--surface);
   object-fit: cover;
 }
