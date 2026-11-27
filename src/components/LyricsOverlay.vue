@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from "vue";
 import Icon from "./Icon.vue";
+import LyricsControls from "./LyricsControls.vue";
 import { artistText } from "../api";
 import { usePlayer } from "../composables/usePlayer";
+import { useWindowControls } from "../composables/useWindowControls";
 
 /**
  * 歌词覆盖层。
@@ -13,6 +15,8 @@ import { usePlayer } from "../composables/usePlayer";
  */
 const player = usePlayer();
 const { state, current } = player;
+// 覆盖层盖住标题栏后，窗口按钮必须由这里提供，否则关不掉也拖不动。
+const { maximized, minimize, toggleMaximize, close } = useWindowControls();
 
 const scroller = ref<HTMLDivElement | null>(null);
 const lineEls = ref<HTMLElement[]>([]);
@@ -83,18 +87,26 @@ function jump(timeMs: number | null) {
   <div v-if="state.lyricsOpen" class="overlay">
     <div class="backdrop" :style="backdropStyle" />
 
-    <header class="top">
+    <header class="top" data-tauri-drag-region>
       <button class="back" @click="player.closeLyrics()">
         <Icon name="back" :size="15" />
         收起
       </button>
       <span class="hint">
-        {{ state.lyrics?.synced ? "逐行歌词 · 点任意一句可跳转 · Esc 收起" : "" }}
+        {{ state.lyrics?.synced ? "点任意一句可跳转 · Esc 收起" : "" }}
       </span>
-      <div class="spacer" />
-      <button class="close" title="收起歌词（Esc）" @click="player.closeLyrics()">
-        <Icon name="close" :size="15" />
-      </button>
+      <div class="spacer" data-tauri-drag-region />
+      <div class="ctls">
+        <button class="ctl" title="最小化" @click="minimize">
+          <Icon name="win-min" :size="14" />
+        </button>
+        <button class="ctl" :title="maximized ? '还原' : '最大化'" @click="toggleMaximize">
+          <Icon :name="maximized ? 'win-restore' : 'win-max'" :size="14" />
+        </button>
+        <button class="ctl close" title="关闭" @click="close">
+          <Icon name="close" :size="14" />
+        </button>
+      </div>
     </header>
 
     <div v-if="!current" class="empty">还没有播放中的歌曲</div>
@@ -126,22 +138,34 @@ function jump(timeMs: number | null) {
         </div>
       </div>
     </div>
+
+    <div class="transport-wrap">
+      <LyricsControls v-if="current" />
+    </div>
   </div>
 </template>
 
 <style scoped>
 .overlay {
   position: fixed;
-  top: var(--titlebar-h);
-  right: 0;
-  bottom: var(--player-h);
-  left: 0;
-  z-index: 40;
+  inset: 0;
+  z-index: 50;
   display: flex;
   flex-direction: column;
-  padding: 18px 28px 0;
   overflow: hidden;
   background: var(--bg);
+  animation: overlay-in 0.16s ease;
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* 用当前封面做一层模糊底色，避免整块纯色显得空。 */
@@ -151,7 +175,7 @@ function jump(timeMs: number | null) {
   background-position: center;
   background-size: cover;
   filter: blur(64px) saturate(1.3);
-  opacity: 0.2;
+  opacity: 0.28;
   pointer-events: none;
 }
 
@@ -165,29 +189,50 @@ function jump(timeMs: number | null) {
 .top {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+  height: var(--titlebar-h);
+  padding-left: 14px;
   flex: none;
 }
 
-.back,
-.close {
+.back {
   display: flex;
   align-items: center;
   gap: 4px;
   font-size: 12px;
   color: var(--muted);
-  padding: 4px 8px;
+  padding: 4px 8px 4px 4px;
   border-radius: 5px;
 }
 
-.back {
-  padding-left: 4px;
-}
-
-.back:hover,
-.close:hover {
+.back:hover {
   color: var(--text);
   background: var(--surface);
+}
+
+.ctls {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  flex: none;
+}
+
+.ctl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  color: var(--muted);
+}
+
+.ctl:hover {
+  color: var(--text);
+  background: var(--line);
+}
+
+.ctl.close:hover {
+  color: #fff;
+  background: #c8443c;
 }
 
 .hint {
@@ -201,14 +246,27 @@ function jump(timeMs: number | null) {
 
 .stage {
   display: flex;
-  gap: 48px;
+  gap: 52px;
   flex: 1;
   min-height: 0;
-  padding: 20px 0 0;
+  padding: 6px 32px 0;
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.transport-wrap {
+  flex: none;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 32px;
+  position: relative;
+  z-index: 1;
 }
 
 .meta-col {
-  width: 240px;
+  width: 232px;
   flex: none;
   display: flex;
   flex-direction: column;
@@ -217,8 +275,8 @@ function jump(timeMs: number | null) {
 }
 
 .cover {
-  width: 240px;
-  height: 240px;
+  width: 232px;
+  height: 232px;
   border-radius: 8px;
   background: var(--surface);
   object-fit: cover;
@@ -253,17 +311,22 @@ function jump(timeMs: number | null) {
 .lines {
   flex: 1;
   overflow-y: auto;
-  padding: 8px 0 40vh;
+  padding: 4px 0 36vh;
   scrollbar-width: thin;
-  max-width: 640px;
+  max-width: 660px;
+}
+
+/* 沉浸模式下隐藏滚动条：歌词是跟随播放滚动的，不是拿来拖的。 */
+.lines::-webkit-scrollbar {
+  width: 0;
 }
 
 .line {
-  padding: 10px 0;
-  font-size: 15px;
+  padding: 11px 0;
+  font-size: 16px;
   line-height: 1.6;
   color: var(--faint);
-  transition: color 0.15s ease;
+  transition: color 0.18s ease, font-size 0.18s ease;
 }
 
 .line.tappable {
@@ -276,6 +339,7 @@ function jump(timeMs: number | null) {
 
 .line.active {
   color: var(--text);
+  font-size: 18px;
   font-weight: 500;
 }
 
@@ -285,8 +349,8 @@ function jump(timeMs: number | null) {
 
 .translation {
   display: block;
-  margin-top: 2px;
-  font-size: 12px;
+  margin-top: 3px;
+  font-size: 12.5px;
   color: var(--faint);
   font-weight: 400;
 }

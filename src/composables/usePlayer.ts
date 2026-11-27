@@ -4,6 +4,14 @@ import { useToast } from "./useToast";
 
 export type PlayMode = "order" | "repeat-all" | "repeat-one" | "shuffle";
 
+/** 播放模式的图标与文案，播放栏和歌词页共用，避免两处各写一份对照表。 */
+export const PLAY_MODE_META: Record<PlayMode, { icon: string; label: string }> = {
+  "repeat-all": { icon: "repeat", label: "列表循环" },
+  order: { icon: "order", label: "顺序播放" },
+  "repeat-one": { icon: "repeat-one", label: "单曲循环" },
+  shuffle: { icon: "shuffle", label: "随机播放" },
+};
+
 const toast = useToast();
 const audio = new Audio();
 audio.preload = "auto";

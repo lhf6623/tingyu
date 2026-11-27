@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import Icon from "./Icon.vue";
 import { artistText, maskDuration } from "../api";
-import { usePlayer, type PlayMode } from "../composables/usePlayer";
+import { PLAY_MODE_META, usePlayer } from "../composables/usePlayer";
 
 const player = usePlayer();
 const { state, current, progress } = player;
@@ -15,25 +15,9 @@ function toggleLyrics() {
 const bar = ref<HTMLDivElement | null>(null);
 const dragging = ref(false);
 
-const modeIcon = computed(() => {
-  const map: Record<PlayMode, string> = {
-    "repeat-all": "repeat",
-    order: "order",
-    "repeat-one": "repeat-one",
-    shuffle: "shuffle",
-  };
-  return map[state.mode];
-});
 
-const modeLabel = computed(() => {
-  const map: Record<PlayMode, string> = {
-    "repeat-all": "列表循环",
-    order: "顺序播放",
-    "repeat-one": "单曲循环",
-    shuffle: "随机播放",
-  };
-  return map[state.mode];
-});
+const modeIcon = computed(() => PLAY_MODE_META[state.mode].icon);
+const modeLabel = computed(() => PLAY_MODE_META[state.mode].label);
 
 function ratioFromEvent(event: PointerEvent): number {
   const element = bar.value;

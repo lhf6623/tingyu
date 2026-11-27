@@ -1,46 +1,23 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
-import { getCurrentWindow } from "@tauri-apps/api/window";
 import Icon from "./Icon.vue";
 import { artistText, type Track } from "../api";
 import { useNav } from "../composables/useNav";
 import { useSearch } from "../composables/useSearch";
+import { useWindowControls } from "../composables/useWindowControls";
 
 const nav = useNav();
 const search = useSearch();
 const { keyword, suggestions, suggesting, history } = search;
 
-const maximized = ref(false);
 const open = ref(false);
 const active = ref(-1);
 const searchBox = ref<HTMLElement | null>(null);
 
-const win = getCurrentWindow();
-let unlistenResize: (() => void) | undefined;
+const { maximized, minimize, toggleMaximize, close } = useWindowControls();
 let debounce: number | undefined;
 
 const typed = computed(() => keyword.value.trim().length > 0);
-async function syncMaximized() {
-  try {
-    maximized.value = await win.isMaximized();
-  } catch {
-    maximized.value = false;
-  }
-}
-
-async function minimize() {
-  await win.minimize();
-}
-
-async function toggleMaximize() {
-  await win.toggleMaximize();
-  await syncMaximized();
-}
-
-/** 走 Tauri 的关闭请求：设置了「关闭到托盘」时会被 Rust 侧拦下并隐藏窗口。 */
-async function close() {
-  await win.close();
-}
 
 function openDropdown() {
   open.value = true;
@@ -133,15 +110,12 @@ function onWindowBlur() {
   closeDropdown();
 }
 
-onMounted(async () => {
-  await syncMaximized();
-  unlistenResize = await win.onResized(() => void syncMaximized());
+onMounted(() => {
   window.addEventListener("pointerdown", onDocumentPointerDown, true);
   window.addEventListener("blur", onWindowBlur);
 });
 
 onBeforeUnmount(() => {
-  unlistenResize?.();
   window.clearTimeout(debounce);
   window.removeEventListener("pointerdown", onDocumentPointerDown, true);
   window.removeEventListener("blur", onWindowBlur);
